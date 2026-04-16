@@ -1,5 +1,5 @@
 const App = () => {
-  return <h1>Market box,</h1>;
+  return <h1>MakerBox</h1>;
 };
 
 export default App;
