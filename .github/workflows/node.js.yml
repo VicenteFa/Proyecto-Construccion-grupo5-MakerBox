@@ -65,6 +65,7 @@ jobs:
 
       - name: Ejecutar linter
         run: npm run lint
+        run: npm run lint -- --fix
 
       - name: Ejecutar pruebas y cobertura
         run: npm run test:cov
