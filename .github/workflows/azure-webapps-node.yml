@@ -3,7 +3,7 @@ name: CI/CD Fullstack to Azure
 # 1. TRIGGERS (Cuándo se ejecuta)
 on:
   push:
-    branches: [ "main" ] # Se ejecuta el CI y luego el CD al hacer merge
+    branches: [ "**" ] # Se ejecuta el CI y luego el CD al hacer merge
   workflow_dispatch:
 
 env:
