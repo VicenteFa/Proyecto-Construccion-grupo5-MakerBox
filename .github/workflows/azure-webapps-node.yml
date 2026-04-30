@@ -1,9 +1,10 @@
-name: Deploy Fullstack to Azure
+name: CI/CD Fullstack to Azure
 
+# 1. TRIGGERS (Cuándo se ejecuta)
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch: # Te permite ejecutarlo manualmente desde GitHub
+    branches: [ "main" ] # Se ejecuta el CI y luego el CD al hacer merge
+  workflow_dispatch: # Permite ejecución manual
 
 env:
   # ⚙️ Nombres de tus aplicaciones en Azure
@@ -14,16 +15,17 @@ env:
   BACKEND_PACKAGE_PATH: './backend'
   FRONTEND_PACKAGE_PATH: './frontend'
   
-  # 🟢 Versiones de Node.js (basado en tu CI previo)
+  # 🟢 Versiones de Node.js
   NODE_VERSION_BACKEND: '22.x'
   NODE_VERSION_FRONTEND: '20.x'
 
+# Permiso global de lectura
 permissions:
   contents: read
 
 jobs:
   # ---------------------------------------------------
-  # 1. BUILD BACKEND
+  # 1. BUILD BACKEND (Integración Continua - CI)
   # ---------------------------------------------------
   build-backend:
     runs-on: ubuntu-latest
@@ -53,7 +55,7 @@ jobs:
           path: ${{ env.BACKEND_PACKAGE_PATH }}
 
   # ---------------------------------------------------
-  # 2. BUILD FRONTEND
+  # 2. BUILD FRONTEND (Integración Continua - CI)
   # ---------------------------------------------------
   build-frontend:
     runs-on: ubuntu-latest
@@ -83,13 +85,19 @@ jobs:
           path: ${{ env.FRONTEND_PACKAGE_PATH }}
 
   # ---------------------------------------------------
-  # 3. DEPLOY BACKEND
+  # 3. DEPLOY BACKEND (Despliegue Continuo - CD)
   # ---------------------------------------------------
   deploy-backend:
-    permissions:
-      contents: none
+    # 🛑 Solo despliega si es un push (merge) directo a la rama main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build-backend
+    
+    # 🔑 Permisos requeridos por OIDC para iniciar sesión sin contraseñas
+    permissions:
+      id-token: write
+      contents: read
+      
     environment:
       name: 'Production-Backend'
       url: ${{ steps.deploy-to-webapp-backend.outputs.webapp-url }}
@@ -101,22 +109,34 @@ jobs:
           name: node-app-backend
           path: ${{ env.BACKEND_PACKAGE_PATH }}
 
-      - name: Desplegar Backend a Azure WebApp
+      - name: 🔐 Iniciar sesión en Azure (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: 🚀 Desplegar Backend a Azure WebApp
         id: deploy-to-webapp-backend
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME_BACKEND }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND }}
           package: ${{ env.BACKEND_PACKAGE_PATH }}
 
   # ---------------------------------------------------
-  # 4. DEPLOY FRONTEND
+  # 4. DEPLOY FRONTEND (Despliegue Continuo - CD)
   # ---------------------------------------------------
   deploy-frontend:
-    permissions:
-      contents: none
+    # 🛑 Solo despliega si es un push (merge) directo a la rama main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build-frontend
+    
+    # 🔑 Permisos requeridos por OIDC para iniciar sesión sin contraseñas
+    permissions:
+      id-token: write
+      contents: read
+      
     environment:
       name: 'Production-Frontend'
       url: ${{ steps.deploy-to-webapp-frontend.outputs.webapp-url }}
@@ -128,10 +148,16 @@ jobs:
           name: node-app-frontend
           path: ${{ env.FRONTEND_PACKAGE_PATH }}
 
-      - name: Desplegar Frontend a Azure WebApp
+      - name: 🔐 Iniciar sesión en Azure (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: 🚀 Desplegar Frontend a Azure WebApp
         id: deploy-to-webapp-frontend
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME_FRONTEND }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND }}
           package: ${{ env.FRONTEND_PACKAGE_PATH }}
