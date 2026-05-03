@@ -11,7 +11,7 @@ const API_PREFIX = 'api';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'client'),
-      exclude: [`/${API_PREFIX}/:path(.*)`],
+      exclude: [`/${API_PREFIX}*`],
     }),
   ],
   controllers: [AppController, AuthController],
