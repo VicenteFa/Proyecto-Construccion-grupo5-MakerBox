@@ -1,3 +1,7 @@
+import { Typography } from 'antd';
+
+const { Title } = Typography;
+
 export const Home = () => {
-  return <h1>Home</h1>;
+  return <Title>Home</Title>;
 };
