@@ -23,18 +23,24 @@ export const getUsers = async (): Promise<IUsersResponse> => {
 /**
  * Verifica que el param data sea igual a -> { users: IUser[] }
  */
-export function isValidUsersResponse(data: any): data is IUsersResponse {
-  if (!data || typeof data !== 'object' || !Array.isArray(data.users)) {
+export const isValidUsersResponse = (data: unknown): data is IUsersResponse => {
+  if (!data || typeof data !== 'object') {
     return false;
   }
 
-  return data.users.every((user: any) => {
-    return (
-      user &&
-      typeof user === 'object' &&
-      typeof user.id === 'string' &&
-      typeof user.name === 'string' &&
-      typeof user.age === 'number'
-    );
+  const obj = data as Record<string, unknown>;
+
+  if (!Array.isArray(obj.users)) {
+    return false;
+  }
+
+  return obj.users.every((user: unknown) => {
+    if (!user || typeof user !== 'object') {
+      return false;
+    }
+
+    const u = user as Record<string, unknown>;
+
+    return typeof u.id === 'string' && typeof u.name === 'string' && typeof u.age === 'number';
   });
-}
+};
