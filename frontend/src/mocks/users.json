@@ -1,0 +1,104 @@
+{
+  "users": [
+    {
+      "id": "u-001",
+      "name": "Ana Silva",
+      "age": 28
+    },
+    {
+      "id": "u-002",
+      "name": "Carlos Muñoz",
+      "age": 34
+    },
+    {
+      "id": "u-003",
+      "name": "María González",
+      "age": 42
+    },
+    {
+      "id": "u-004",
+      "name": "Luis Rojas",
+      "age": 25
+    },
+    {
+      "id": "u-005",
+      "name": "Sofía Castro",
+      "age": 31
+    },
+    {
+      "id": "u-006",
+      "name": "Jorge Soto",
+      "age": 45
+    },
+    {
+      "id": "u-007",
+      "name": "Camila Herrera",
+      "age": 22
+    },
+    {
+      "id": "u-008",
+      "name": "Diego Navarro",
+      "age": 38
+    },
+    {
+      "id": "u-009",
+      "name": "Valentina Morales",
+      "age": 29
+    },
+    {
+      "id": "u-010",
+      "name": "Matías Vega",
+      "age": 27
+    },
+    {
+      "id": "u-011",
+      "name": "Isabella Fernández",
+      "age": 50
+    },
+    {
+      "id": "u-012",
+      "name": "Gabriel Torres",
+      "age": 33
+    },
+    {
+      "id": "u-013",
+      "name": "Martina Ramírez",
+      "age": 26
+    },
+    {
+      "id": "u-014",
+      "name": "Sebastián Reyes",
+      "age": 41
+    },
+    {
+      "id": "u-015",
+      "name": "Julieta Vargas",
+      "age": 19
+    },
+    {
+      "id": "u-016",
+      "name": "Joaquín Medina",
+      "age": 36
+    },
+    {
+      "id": "u-017",
+      "name": "Catalina Salazar",
+      "age": 48
+    },
+    {
+      "id": "u-018",
+      "name": "Nicolás Pizarro",
+      "age": 30
+    },
+    {
+      "id": "u-019",
+      "name": "Florencia Espinoza",
+      "age": 24
+    },
+    {
+      "id": "u-020",
+      "name": "Tomás Carrasco",
+      "age": 39
+    }
+  ]
+}
