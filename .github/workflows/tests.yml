@@ -40,6 +40,7 @@ jobs:
       - name: Subir cobertura a Codecov
         uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           name: reporte-backend
           flags: backend
           directory: ./backend/coverage/
@@ -74,6 +75,7 @@ jobs:
       - name: Subir cobertura a Codecov
         uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           name: reporte-frontend
           flags: frontend
           directory: ./frontend/coverage/
