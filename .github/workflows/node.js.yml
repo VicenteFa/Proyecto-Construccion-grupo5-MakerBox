@@ -30,7 +30,11 @@ jobs:
         run: npm ci
 
       - name: Ejecutar Linter
-        run: npm run lint
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          npx prisma generate
+          npm run lint -- --fix
 
       - name: Ejecutar pruebas y cobertura
         run: npm run test:cov
@@ -64,7 +68,7 @@ jobs:
         run: npm ci
 
       - name: Ejecutar linter
-        run: npm run lint -- --fix
+        run: npm run lint
 
       - name: Ejecutar pruebas y cobertura
         run: npm run test:cov
