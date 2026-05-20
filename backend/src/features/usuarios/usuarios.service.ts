@@ -1,7 +1,20 @@
-import { Injectable } from '@nestjs/common';
-// import { PrismaService } from '../../shared/prisma/prisma.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../shared/prisma/prisma.service';
+import { Usuario } from '../../generated/prisma';
 
-@Injectable() // <- Esto le dice a NestJS que esta clase es un servicio que puede ser inyectado en otros lugares
+@Injectable()
 export class UsuariosService {
-  //constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
+
+  async obtenerUsuario(id: string): Promise<Usuario> {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { idUsuario: id },
+    });
+
+    if (!usuario) {
+      throw new NotFoundException(`El usuario con ID ${id} no existe`);
+    }
+
+    return usuario;
+  }
 }
