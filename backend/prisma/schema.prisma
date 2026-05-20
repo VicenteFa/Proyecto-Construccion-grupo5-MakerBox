@@ -1,0 +1,162 @@
+generator client {
+  provider     = "prisma-client-js"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TipoRol {
+  ESTUDIANTE
+  PROFESOR
+  AYUDANTE
+
+  @@map("tipo_rol")
+}
+
+enum EstadoAyudantia {
+  ACTIVA
+  INACTIVA
+
+  @@map("estado_ayudantia")
+}
+
+enum EstadoImpresion {
+  PENDIENTE
+  IMPRIMIENDO
+  FINALIZADA
+  RECHAZADA
+
+  @@map("estado_impresion")
+}
+
+enum EstadoReserva {
+  PENDIENTE
+  CONFIRMADA
+  CANCELADA
+
+  @@map("estado_reserva")
+}
+
+model Usuario {
+  idUsuario     String    @id @default(uuid()) @map("id_usuario")
+  rut           String    @db.VarChar(10)
+  nombre        String    @db.VarChar(100)
+  apellido      String    @db.VarChar(100)
+  correo        String    @db.VarChar(100)
+  passUsuario   String    @db.VarChar(255)
+  usuarioRol    TipoRol   @map("usuario_rol")
+  borradoEn     DateTime? @map("borrado_en")
+  creadoEn      DateTime? @default(now()) @map("creado_en")
+  actualizadoEn DateTime? @updatedAt @map("actualizado_en")
+
+  cursosProfesor        Curso[]     @relation("CursoProfesor")
+  ayudantias            Ayudantia[] @relation("AyudantiaAyudante")
+  impresionesEstudiante Impresion[] @relation("ImpresionEstudiante")
+  impresionesAyudante   Impresion[] @relation("ImpresionAyudante")
+  reservasAyudante      Reserva[]   @relation("ReservaAyudante")
+
+  @@map("usuario")
+}
+
+model Curso {
+  idCurso       String    @id @default(uuid()) @map("id_curso")
+  nombre        String    @db.VarChar(100)
+  refSemestre   String    @map("ref_semestre")
+  refProfesor   String    @map("ref_profesor")
+  borradoEn     DateTime? @map("borrado_en")
+  creadoEn      DateTime? @default(now()) @map("creado_en")
+  actualizadoEn DateTime? @updatedAt @map("actualizado_en")
+
+  // Relaciones
+  profesor Usuario  @relation("CursoProfesor", fields: [refProfesor], references: [idUsuario])
+  semestre Semestre @relation(fields: [refSemestre], references: [idSemestre])
+
+  ayudantias  Ayudantia[]
+  impresiones Impresion[]
+
+  @@map("curso")
+}
+
+model Ayudantia {
+  idAyudantia     String          @id @default(uuid()) @map("id_ayudantia")
+  nombreAyudantia String          @map("nombre_ayudantia") @db.VarChar(100)
+  refCurso        String          @map("ref_curso")
+  refGrupo        String?         @map("ref_grupo")
+  refAyudante     String          @map("ref_ayudante")
+  horario         DateTime        @map("horario")
+  cupoMaximo      Int             @map("cupo_maximo")
+  estado          EstadoAyudantia @map("estado")
+
+  curso    Curso       @relation(fields: [refCurso], references: [idCurso])
+  ayudante Usuario     @relation("AyudantiaAyudante", fields: [refAyudante], references: [idUsuario])
+  grupo    GrupoCurso? @relation(fields: [refGrupo], references: [idGrupoCurso]) // Requiere modelo GrupoCurso
+
+  @@map("ayudantia")
+}
+
+model Impresion {
+  idImpresion             String          @id @default(uuid()) @map("id_impresion")
+  solicitanteNombre       String?         @map("solicitante_nombre") @db.VarChar(50)
+  solicitanteApellido     String?         @map("solicitante_apellido") @db.VarChar(50)
+  solicitanteCorreo       String?         @map("solicitante_correo") @db.VarChar(100)
+  solicitanteRut          String?         @map("solicitante_rut") @db.VarChar(10)
+  refEstudiante           String?         @map("ref_estudiante")
+  refAyudante             String?         @map("ref_ayudante")
+  tipoUsuario             String?         @map("tipo_usuario") @db.VarChar(50)
+  tipoSolicitud           String?         @map("tipo_solicitud") @db.VarChar(50)
+  nombreCurso             String?         @map("nombre_curso") @db.VarChar(100)
+  refCurso                String?         @map("ref_curso")
+  colorOpcion1            String          @map("color_opcion1") @db.VarChar(50)
+  colorOpcion2            String          @map("color_opcion2") @db.VarChar(50)
+  colorOpcion3            String          @map("color_opcion3") @db.VarChar(50)
+  comentarioTecnico       String?         @map("comentario_tecnico") @db.Text
+  urlModelo3d             String          @map("url_modelo_3d") @db.VarChar(255)
+  urlModeloStl            String          @map("url_modelo_stl") @db.VarChar(255)
+  comentario              String          @map("comentario") @db.Text
+  estado                  EstadoImpresion @map("estado")
+  observacionAyudante     String?         @map("observacion_ayudante") @db.Text
+  motivoRechazo           String?         @map("motivo_rechazo") @db.Text
+  tiempoEstimadoImpresion String?         @map("tiempo_estimado_impresion") @db.VarChar(50)
+  inicioImpresion         DateTime?       @map("inicio_impresion")
+  creadoEn                DateTime?       @default(now()) @map("creado_en")
+
+  estudiante Usuario? @relation("ImpresionEstudiante", fields: [refEstudiante], references: [idUsuario])
+  ayudante   Usuario? @relation("ImpresionAyudante", fields: [refAyudante], references: [idUsuario])
+  curso      Curso?   @relation(fields: [refCurso], references: [idCurso])
+
+  @@map("impresion")
+}
+
+model Reserva {
+  idReserva           String        @id @default(uuid()) @map("id_reserva")
+  fechaReserva        DateTime      @map("fecha_reserva")
+  estadoReserva       EstadoReserva @map("estado_reserva")
+  solicitanteNombre   String        @map("solicitante_nombre") @db.VarChar(50)
+  solicitanteApellido String        @map("solicitante_apellido") @db.VarChar(50)
+  solicitanteCorreo   String        @map("solicitante_correo") @db.VarChar(100)
+  solicitanteRut      String        @map("solicitante_rut") @db.VarChar(10)
+  refAyudante         String?       @map("ref_ayudante") // No tiene NN
+  motivoReserva       String        @map("motivo_reserva") @db.VarChar(255)
+  creadoEn            DateTime?     @default(now()) @map("creado_en")
+
+  ayudante Usuario? @relation("ReservaAyudante", fields: [refAyudante], references: [idUsuario])
+
+  @@map("reserva")
+}
+
+model Semestre {
+  idSemestre String  @id @default(uuid()) @map("id_semestre")
+  cursos     Curso[]
+
+  @@map("semestre")
+}
+
+model GrupoCurso {
+  idGrupoCurso String      @id @default(uuid()) @map("id_grupo_curso")
+  ayudantias   Ayudantia[]
+
+  @@map("grupo_curso")
+}
