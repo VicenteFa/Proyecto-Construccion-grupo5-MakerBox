@@ -1,26 +1,20 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
-import { PrismaClient } from '../../generated/client';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../shared/prisma/prisma.service';
+import { Usuario } from '../../generated/client';
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  private readonly logger = new Logger(PrismaService.name);
+export class UsuariosService {
+  constructor(private prisma: PrismaService) {}
 
-  constructor() {
-    super();
-    this.logger.log('PrismaClient inicializado');
-  }
+  async obtenerUsuario(id: string): Promise<Usuario> {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { idUsuario: id },
+    });
 
-  async onModuleInit() {
-    try {
-      await this.$connect();
-      this.logger.log('La DB fue conectada con exito');
-    } catch (error) {
-      this.logger.error('Conexion a la DB fallo', error);
-      throw error;
+    if (!usuario) {
+      throw new NotFoundException(`El usuario con ID ${id} no existe`);
     }
-  }
 
-  async onModuleDestroy() {
-    await this.$disconnect();
+    return usuario;
   }
 }
