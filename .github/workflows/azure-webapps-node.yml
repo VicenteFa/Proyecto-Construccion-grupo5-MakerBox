@@ -51,9 +51,11 @@ jobs:
           name: node-app-backend
           path: |
             ${{ env.BACKEND_PACKAGE_PATH }}/dist
+            ${{ env.BACKEND_PACKAGE_PATH }}/src/generated
             ${{ env.BACKEND_PACKAGE_PATH }}/prisma
             ${{ env.BACKEND_PACKAGE_PATH }}/package.json
             ${{ env.BACKEND_PACKAGE_PATH }}/package-lock.json
+            ${{ env.BACKEND_PACKAGE_PATH }}/node_modules
 
   # 2. BUILD FRONTEND CI
   build-frontend:
