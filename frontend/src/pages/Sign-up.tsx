@@ -1,0 +1,70 @@
+import { Form, Input, Button, Typography, Card } from 'antd';
+import { useForm, Controller } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
+
+const { Title } = Typography;
+
+interface SignUpFormInputs {
+  email: string;
+  password: string;
+}
+
+const cardStyles = { width: 400, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' };
+const titleStyles = { textAlign: 'center', marginBottom: 24 } as const;
+
+export const SignUpPage = () => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormInputs>();
+
+  const onSubmit: SubmitHandler<SignUpFormInputs> = (data) => {
+    console.log('Data', data);
+  };
+
+  return (
+    <Card style={cardStyles}>
+      <Title level={3} style={titleStyles}>
+        Sign Up
+      </Title>
+
+      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
+        <Form.Item
+          label="Email"
+          validateStatus={errors.email ? 'error' : ''}
+          help={errors.email?.message}
+        >
+          <Controller
+            name="email"
+            control={control}
+            rules={{ required: 'Email is required' }}
+            render={({ field }) => <Input {...field} placeholder="Email" />}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Password"
+          validateStatus={errors.password ? 'error' : ''}
+          help={errors.password?.message}
+        >
+          <Controller
+            name="password"
+            control={control}
+            rules={{
+              required: 'Password required',
+              minLength: { value: 6, message: 'Too short!' },
+            }}
+            render={({ field }) => <Input.Password {...field} placeholder="Password" />}
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" color="green" block>
+            Sign Up
+          </Button>
+        </Form.Item>
+      </Form>
+    </Card>
+  );
+};
