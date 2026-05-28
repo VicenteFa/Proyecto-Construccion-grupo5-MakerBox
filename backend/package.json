@@ -26,6 +26,7 @@
     "@nestjs/serve-static": "^5.0.5",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "dotenv": "^17.4.2",
     "pg": "^8.21.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
@@ -59,6 +60,10 @@
     "typescript-eslint": "^8.20.0"
   },
   "jest": {
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/src/generated/"
+    ],
     "moduleFileExtensions": [
       "js",
       "json",
