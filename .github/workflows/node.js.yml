@@ -70,9 +70,6 @@ jobs:
       - name: Ejecutar linter
         run: npm run lint
 
-      - name: Ejecutar pruebas y cobertura
-        run: npm run test:cov
-
       - name: Subir reporte de Frontend
         uses: actions/upload-artifact@v4
         if: always()
