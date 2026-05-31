@@ -10,10 +10,13 @@ describe('UsuariosService (Pruebas de Integración)', () => {
   let module: TestingModule; //
 
   beforeAll(async () => {
-    // 2. Guarda el módulo en la variable
+    process.env.DATABASE_URL = 'postgresql://polUser:polito123@127.0.0.1:5432/testdb';
+    // Guarda modulo en la variable
     module = await Test.createTestingModule({
       providers: [UsuariosService, PrismaService],
     }).compile();
+
+    await module.init();
 
     service = module.get<UsuariosService>(UsuariosService);
     prisma = module.get<PrismaService>(PrismaService);

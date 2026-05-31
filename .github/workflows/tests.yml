@@ -13,7 +13,7 @@ jobs:
   build-backend:
     name: Backend Check
     runs-on: ubuntu-latest
-    
+
     # base de datos temporal para pruebas de integracion
     services:
       postgres:
@@ -51,7 +51,7 @@ jobs:
       - name: Ejecutar Linter
         env:
           # base de datos local temporal para generar el cliente
-          DATABASE_URL: "postgresql://polUser:polito123@localhost:5432/testdb"
+          DATABASE_URL: "postgresql://polUser:polito123@127.0.0.1:5432/testdb"
         run: |
           npx prisma generate
           npm run lint
@@ -59,9 +59,8 @@ jobs:
       - name: Ejecutar pruebas y cobertura
         env:
           # conectar tests de integracion al contenedor l ocal
-          DATABASE_URL: "postgresql://polUser:polito123@localhost:5432/testdb"
+          DATABASE_URL: "postgresql://polUser:polito123@127.0.0.1:5432/testdb"
         run: |
-          # 4. Sincronizar el esquema de Prisma con el contenedor vacío antes de probar
           npx prisma db push --accept-data-loss
           npm run test:cov
 
