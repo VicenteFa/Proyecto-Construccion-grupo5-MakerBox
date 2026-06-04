@@ -16,6 +16,7 @@ export class UsuariosService {
     }
 
     const { passUsuario, ...usuarioSeguro } = usuario;
+    console.log('Usuario obtenido:', passUsuario); // Verificar que la contraseña se ha obtenido correctamente
 
     return usuarioSeguro;
   }
@@ -23,6 +24,7 @@ export class UsuariosService {
   async agregarUsuario(data: Prisma.UsuarioCreateInput): Promise<Omit<Usuario, 'passUsuario'>> {
     const nuevoUsuario = await this.prisma.usuario.create({ data });
     const { passUsuario, ...usuarioSeguro } = nuevoUsuario;
+    console.log('Usuario creado:', passUsuario); // Verificar que la contraseña se ha creado correctamente
     return usuarioSeguro;
   }
 }
