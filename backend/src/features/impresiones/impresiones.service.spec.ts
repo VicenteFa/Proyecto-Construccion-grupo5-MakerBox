@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImpresionesService } from './impresiones.service';
 import { PrismaService } from '../../shared/prisma/prisma.service';
-import { EstadoImpresion, Impresion } from '../../generated/client';
+import { EstadoImpresion, Impresion } from '@prisma/client';
 
 // Mock de PrismaService
 const mockPrismaService = {
