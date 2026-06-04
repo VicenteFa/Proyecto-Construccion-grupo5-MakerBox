@@ -15,6 +15,7 @@ export const useUsuarios = () => {
       const data = await usuariosService.obtenerUsuarioPorId(id);
       setUsuario(data);
     } catch (err) {
+      console.log('Error al obtener usuario:', err);
       setError('No se encontró el usuario');
     } finally {
       setLoading(false);
