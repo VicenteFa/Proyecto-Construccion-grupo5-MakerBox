@@ -1,16 +1,9 @@
 import { Layout as AntLayout, Menu } from 'antd';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
+import { useAuth } from '../shared/hooks/useAuth';
 
 const { Header, Content, Footer } = AntLayout;
-
-// Capitalize function pq javascript es incapaz de tener un built-in para esto TODO: mover esta función a un utils
-const formatNavLabel = (key: string) => {
-  return key
-    .split('_')
-    .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
-    .join(' ');
-};
 
 const layoutStyles = { minHeight: '100vh' };
 
@@ -33,11 +26,20 @@ const menuStyles = { flex: 1, minWidth: 0 };
 
 export const MainLayout = () => {
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
-  const menuItems = Object.entries(ROUTES).map(([key, path]) => ({
-    key: path,
-    label: <Link to={path}>{formatNavLabel(key)}</Link>,
-  }));
+  const menuItems = [
+    { key: ROUTES.HOME.path, label: <Link to={ROUTES.HOME.path}>Home</Link> },
+    ...(!isAuthenticated
+      ? [
+          { key: ROUTES.LOGIN.path, label: <Link to={ROUTES.LOGIN.path}>Login</Link> },
+          { key: ROUTES.SIGN_UP.path, label: <Link to={ROUTES.SIGN_UP.path}>Sign Up</Link> },
+        ]
+      : []),
+    ...(isAuthenticated && ROUTES.ADMIN.isVisible
+      ? [{ key: ROUTES.ADMIN.path, label: <Link to={ROUTES.ADMIN.path}>Admin</Link> }]
+      : []),
+  ];
 
   return (
     <AntLayout style={layoutStyles}>
