@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { Prisma, Usuario } from '@prisma/client';
 
@@ -22,9 +22,27 @@ export class UsuariosService {
   }
 
   async agregarUsuario(data: Prisma.UsuarioCreateInput): Promise<Omit<Usuario, 'passUsuario'>> {
+    // Validar RUT duplicado
+    const rutOcupado = await this.prisma.usuario.findFirst({
+      where: { rut: data.rut },
+    });
+    if (rutOcupado) {
+      throw new ConflictException('Este RUT ya se encuentra registrado en el sistema.');
+    }
+
+    // Validar Correo duplicado
+    const correoOcupado = await this.prisma.usuario.findFirst({
+      where: { correo: data.correo },
+    });
+    if (correoOcupado) {
+      throw new ConflictException('Este correo electrónico ya está en uso.');
+    }
+
+    // Crear usuario si todas las validaciones pasaron
     const nuevoUsuario = await this.prisma.usuario.create({ data });
     const { passUsuario, ...usuarioSeguro } = nuevoUsuario;
     console.log('Usuario creado:', passUsuario); // Verificar que la contraseña se ha creado correctamente
+
     return usuarioSeguro;
   }
 }
