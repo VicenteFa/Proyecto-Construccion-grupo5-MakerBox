@@ -1,18 +1,14 @@
 name: CI/CD Fullstack to Azure
 
-# 1. TRIGGERS (Cuando se ejecuta)
 on:
   push:
-    branches: ["**"] # Se ejecuta el CI y luego el CD al hacer merge
+    branches: ["**"]
   workflow_dispatch:
 
 env:
-  # se ocupa solo 1 nombre porque se hace el deploy fullstack
   AZURE_WEBAPP_NAME: "MiApp-GitHub-Deploy"
-
   BACKEND_PACKAGE_PATH: "./backend"
   FRONTEND_PACKAGE_PATH: "./frontend"
-
   NODE_VERSION_BACKEND: "22.x"
   NODE_VERSION_FRONTEND: "22.x"
 
@@ -43,8 +39,6 @@ jobs:
           npm ci
           npx prisma generate
           npm run build --if-present
-          cp -r src/generated dist/src/
-          cp -r prisma dist/prisma
 
       - name: Subir artefacto del Backend
         uses: actions/upload-artifact@v4
@@ -84,9 +78,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app-frontend
-          path: ${{ env.FRONTEND_PACKAGE_PATH }}/dist # solo se sube la carpeta 'dist' del frontend construido
+          path: ${{ env.FRONTEND_PACKAGE_PATH }}/dist
 
-  # 3. DEPLOY FULLSTACK CD (front y back)
+  # 3. DEPLOY FULLSTACK CD
   deploy-fullstack:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -95,7 +89,6 @@ jobs:
     environment:
       name: production
 
-    # Permisos requeridos por OIDC para iniciar sesion sin contrasenas
     permissions:
       id-token: write
       contents: read
@@ -124,5 +117,5 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Solo usa el unico nombre
-          package: ./app-final # Despliega la carpeta unificada
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: ./app-final

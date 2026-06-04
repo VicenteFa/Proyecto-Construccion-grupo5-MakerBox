@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { PrismaService } from '../../shared/prisma/prisma.service';
-import { TipoRol } from '../../generated/client';
+import { TipoRol } from '@prisma/client';
 
 describe('UsuariosService (Pruebas de Integración)', () => {
   let service: UsuariosService;

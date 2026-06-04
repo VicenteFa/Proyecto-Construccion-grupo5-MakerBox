@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
-import { Prisma, Usuario } from '../../generated/client';
+import { Prisma, Usuario } from '@prisma/client';
 
 @Injectable()
 export class UsuariosService {
   constructor(private prisma: PrismaService) {}
 
-  async obtenerUsuario(id: string): Promise<Usuario> {
+  async obtenerUsuario(id: string): Promise<Omit<Usuario, 'passUsuario'>> {
     const usuario = await this.prisma.usuario.findUnique({
       where: { idUsuario: id },
     });
@@ -15,18 +15,16 @@ export class UsuariosService {
       throw new NotFoundException(`El usuario con ID ${id} no existe`);
     }
 
-    return usuario;
+    const { passUsuario, ...usuarioSeguro } = usuario;
+    console.log('Usuario obtenido:', passUsuario); // Verificar que la contraseña se ha obtenido correctamente
+
+    return usuarioSeguro;
   }
 
-  /**
-   *
-   * @param data
-   * @returns {Promise<Usuario>} El usuario creado, funciona como magia
-   */
-  async agregarUsuario(data: Prisma.UsuarioCreateInput): Promise<Usuario> {
-    const nuevoUsuario = await this.prisma.usuario.create({
-      data,
-    });
-    return nuevoUsuario;
+  async agregarUsuario(data: Prisma.UsuarioCreateInput): Promise<Omit<Usuario, 'passUsuario'>> {
+    const nuevoUsuario = await this.prisma.usuario.create({ data });
+    const { passUsuario, ...usuarioSeguro } = nuevoUsuario;
+    console.log('Usuario creado:', passUsuario); // Verificar que la contraseña se ha creado correctamente
+    return usuarioSeguro;
   }
 }
