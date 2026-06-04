@@ -3,16 +3,13 @@ name: CI/CD Fullstack to Azure
 # 1. TRIGGERS (Cuando se ejecuta)
 on:
   push:
-    branches: ["**"] # Se ejecuta el CI y luego el CD al hacer merge
+    branches: ["**"]
   workflow_dispatch:
 
 env:
-  # se ocupa solo 1 nombre porque se hace el deploy fullstack
   AZURE_WEBAPP_NAME: "MiApp-GitHub-Deploy"
-
   BACKEND_PACKAGE_PATH: "./backend"
   FRONTEND_PACKAGE_PATH: "./frontend"
-
   NODE_VERSION_BACKEND: "22.x"
   NODE_VERSION_FRONTEND: "22.x"
 
@@ -56,7 +53,58 @@ jobs:
             ${{ env.BACKEND_PACKAGE_PATH }}/package-lock.json
             ${{ env.BACKEND_PACKAGE_PATH }}/node_modules
 
-  # 2. BUILD FRONTEND CI
+  # 2. TEST BACKEND CI
+  test-backend:
+    runs-on: ubuntu-latest
+    needs: [build-backend]
+    defaults:
+      run:
+        working-directory: ${{ env.BACKEND_PACKAGE_PATH }}
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js for Backend
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION_BACKEND }}
+          cache: "npm"
+          cache-dependency-path: ${{ env.BACKEND_PACKAGE_PATH }}/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar cliente Prisma
+        run: npx prisma generate
+
+      - name: Crear tablas en DB de test
+        env:
+          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb"
+          NODE_ENV: test
+        run: npx prisma db push --accept-data-loss
+
+      - name: Ejecutar tests
+        env:
+          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb"
+          NODE_ENV: test
+        run: npm run test:cov
+
+  # 3. BUILD FRONTEND CI
   build-frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -82,18 +130,17 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app-frontend
-          path: ${{ env.FRONTEND_PACKAGE_PATH }}/dist # solo se sube la carpeta 'dist' del frontend construido
+          path: ${{ env.FRONTEND_PACKAGE_PATH }}/dist
 
-  # 3. DEPLOY FULLSTACK CD (front y back)
+  # 4. DEPLOY FULLSTACK CD
   deploy-fullstack:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    needs: [build-backend, build-frontend]
+    needs: [build-backend, build-frontend, test-backend]
 
     environment:
       name: production
 
-    # Permisos requeridos por OIDC para iniciar sesion sin contrasenas
     permissions:
       id-token: write
       contents: read
@@ -122,5 +169,5 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Solo usa el unico nombre
-          package: ./app-final # Despliega la carpeta unificada
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: ./app-final
