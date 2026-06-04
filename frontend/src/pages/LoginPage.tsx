@@ -1,5 +1,8 @@
 import { Form, Input, Button, Typography, Card } from 'antd';
 import { useForm, Controller } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../constants/routes';
+import { useAuth } from '../shared/hooks/useAuth';
 import type { SubmitHandler } from 'react-hook-form';
 
 const { Title } = Typography;
@@ -18,9 +21,15 @@ export const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>();
+  const { login } = useAuth();
+
+  const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
     console.log('Data', data);
+
+    login();
+    navigate(ROUTES.ADMIN.path);
   };
 
   return (
