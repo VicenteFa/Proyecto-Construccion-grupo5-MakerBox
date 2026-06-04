@@ -43,8 +43,6 @@ jobs:
           npm ci
           npx prisma generate
           npm run build --if-present
-          cp -r src/generated dist/src/
-          cp -r prisma dist/prisma
 
       - name: Subir artefacto del Backend
         uses: actions/upload-artifact@v4
