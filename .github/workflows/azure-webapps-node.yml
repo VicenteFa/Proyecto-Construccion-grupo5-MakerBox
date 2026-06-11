@@ -50,7 +50,6 @@ jobs:
             ${{ env.BACKEND_PACKAGE_PATH }}/prisma.config.ts
             ${{ env.BACKEND_PACKAGE_PATH }}/package.json
             ${{ env.BACKEND_PACKAGE_PATH }}/package-lock.json
-            ${{ env.BACKEND_PACKAGE_PATH }}/node_modules
 
   # 2. BUILD FRONTEND CI
   build-frontend:
