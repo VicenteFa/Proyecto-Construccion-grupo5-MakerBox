@@ -27,7 +27,7 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Ejecutar Linter
         env:

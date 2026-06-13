@@ -36,9 +36,9 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          npm ci
+          npm ci --ignore-scripts
           npx prisma generate
-          npm run build --if-present
+          npm run build:nest
 
       - name: Subir artefacto del Backend
         uses: actions/upload-artifact@v4
@@ -50,7 +50,6 @@ jobs:
             ${{ env.BACKEND_PACKAGE_PATH }}/prisma.config.ts
             ${{ env.BACKEND_PACKAGE_PATH }}/package.json
             ${{ env.BACKEND_PACKAGE_PATH }}/package-lock.json
-            ${{ env.BACKEND_PACKAGE_PATH }}/node_modules
 
   # 2. BUILD FRONTEND CI
   build-frontend:
