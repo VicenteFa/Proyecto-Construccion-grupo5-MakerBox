@@ -38,7 +38,7 @@ jobs:
         run: |
           npm ci --ignore-scripts
           npx prisma generate
-          npm run build --if-present
+          npm run build:nest
 
       - name: Subir artefacto del Backend
         uses: actions/upload-artifact@v4
