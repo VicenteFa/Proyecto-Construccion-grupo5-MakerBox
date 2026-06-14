@@ -22,7 +22,7 @@ export class AuthService {
     }
 
     const saltos = 10;
-    const passwordHasheada = await bcrypt.hash(datosRegistro.passUsuario, saltos);
+    const passwordHasheada = await bcrypt.hash(datosRegistro.passUsuario, saltos); // Hash de la contraseña
 
     const nuevoUsuario = await this.prisma.usuario.create({
       data: {
@@ -33,10 +33,20 @@ export class AuthService {
         passUsuario: passwordHasheada,
         usuarioRol: TipoRol.ESTUDIANTE,
       },
+      // Indicamos qu campos se retornan, excluyendo passUsuario
+      select: {
+        idUsuario: true,
+        rut: true,
+        nombre: true,
+        apellido: true,
+        correo: true,
+        usuarioRol: true,
+        creadoEn: true,
+        actualizadoEn: true,
+      },
     });
 
-    const { passUsuario, ...usuarioSinPass } = nuevoUsuario;
-    return usuarioSinPass;
+    return nuevoUsuario;
   }
 
   async login(datosLogin: LoginDto) {
