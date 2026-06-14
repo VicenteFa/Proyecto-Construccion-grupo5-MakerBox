@@ -38,12 +38,11 @@ describe('ImpresionesService', () => {
   });
 
   describe('cambiarEstado', () => {
-    it('debe cambiar el estado de una impresion exitosamente', async () => {
-      // 1. Arrange
+    it('cambiar el estado de una impresion exitosamente', async () => {
       const idImpresionTest = 'uuid-1234-5678';
       const nuevoEstado = EstadoImpresion.IMPRIMIENDO;
 
-      //creación a mano de una impresion para que el linter no llore
+      //creacion a mano de una impresion para que el linter no se queje de que no se esta usando el tipo Impresion en el test
       const impresionActualizadaMock: Impresion = {
         idImpresion: idImpresionTest,
         solicitanteNombre: 'Mock Nombre',
@@ -85,7 +84,7 @@ describe('ImpresionesService', () => {
       expect(resultado).toEqual(impresionActualizadaMock);
     });
 
-    it('debe lanzar un error si Prisma falla (ej. impresion no encontrada)', async () => {
+    it('error si Prisma falla)', async () => {
       const idImpresionTest = 'uuid-invalido';
       const nuevoEstado = EstadoImpresion.FINALIZADA;
       const errorPrisma = new Error('Registro no encontrado');
