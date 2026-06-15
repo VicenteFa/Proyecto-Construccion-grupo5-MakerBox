@@ -12,7 +12,6 @@ import { SolicitudPage } from '../pages/ayudante/SolicitudesPage';
 import { MisCursosPage } from '../pages/profesor/MisCursosPage';
 import { MisImpresionesPage } from '../pages/estudiante/MisImpresionesPage';
 
-
 // temporal
 import { TestUsuarioPage } from '../pages/TestUsuarioPage';
 
