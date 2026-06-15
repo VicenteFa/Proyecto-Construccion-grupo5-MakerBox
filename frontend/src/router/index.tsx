@@ -5,6 +5,10 @@ import { ROUTES } from '../constants/routes';
 import { HomePage } from '../pages/HomePage';
 import { SignUpPage } from '../pages/Sign-up';
 import { AdminPage } from '../pages/admin/AdminPage';
+import { AyudanteMainPage } from '../pages/ayudante/AyudanteMainPage';
+import { InventarioPage } from '../pages/ayudante/InventarioPage';
+import { ReservasPage } from '../pages/ayudante/ReservasPage';
+import { SolicitudPage } from '../pages/ayudante/SolicitudesPage';
 
 //temporal:
 import { TestUsuarioPage } from '../pages/TestUsuarioPage';
@@ -19,6 +23,10 @@ export const router = createBrowserRouter([
       { path: ROUTES.LOGIN.path, element: <LoginPage /> },
       { path: ROUTES.SIGN_UP.path, element: <SignUpPage /> },
       { path: ROUTES.ADMIN.path, element: <AdminPage /> },
+      { path: ROUTES.AYUDANTE.path, element: <AyudanteMainPage /> },
+      { path: ROUTES.INVENTARIO.path, element: <InventarioPage /> },
+      { path: ROUTES.RESERVAS.path, element: <ReservasPage /> },
+      { path: ROUTES.SOLICITUD.path, element: <SolicitudPage /> },
     ],
   },
 ]);
