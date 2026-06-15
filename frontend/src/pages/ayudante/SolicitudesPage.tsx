@@ -1,3 +1,8 @@
-export const SolicitudesPage = () => {
-  return <h1>Solicitudes de Impresión</h1>;
+export const SolicitudPage = () => {
+  return (
+    <div>
+      <h1>Solicitud</h1>
+      <p>Esta es la página de reservas.</p>
+    </div>
+  );
 };
