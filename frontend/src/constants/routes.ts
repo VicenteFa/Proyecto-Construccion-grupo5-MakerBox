@@ -7,4 +7,6 @@ export const ROUTES = {
   SOLICITUD: { path: '/solicitud', text: 'Solicitud', isVisible: false },
   RESERVAS: { path: '/reservas', text: 'Reservas', isVisible: false },
   INVENTARIO: { path: '/inventory', text: 'Inventario', isVisible: false },
+  PROFESOR: { path: '/profesor', text: 'Profesor', isVisible: false },
+  ESTUDIANTE: { path: '/estudiante', text: 'Estudiante', isVisible: false },
 } as const;

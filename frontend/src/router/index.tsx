@@ -9,15 +9,17 @@ import { AyudanteMainPage } from '../pages/ayudante/AyudanteMainPage';
 import { InventarioPage } from '../pages/ayudante/InventarioPage';
 import { ReservasPage } from '../pages/ayudante/ReservasPage';
 import { SolicitudPage } from '../pages/ayudante/SolicitudesPage';
+import { MisCursosPage } from '../pages/profesor/MisCursosPage';
+import { MisImpresionesPage } from '../pages/estudiante/MisImpresionesPage';
 
-//temporal:
+
+// temporal
 import { TestUsuarioPage } from '../pages/TestUsuarioPage';
 
 export const router = createBrowserRouter([
   {
     element: <MainLayout />,
     children: [
-      // prueba temporal:
       { path: '/test-usuario', element: <TestUsuarioPage /> },
       { path: ROUTES.HOME.path, element: <HomePage /> },
       { path: ROUTES.LOGIN.path, element: <LoginPage /> },
@@ -27,6 +29,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.INVENTARIO.path, element: <InventarioPage /> },
       { path: ROUTES.RESERVAS.path, element: <ReservasPage /> },
       { path: ROUTES.SOLICITUD.path, element: <SolicitudPage /> },
+      { path: ROUTES.PROFESOR.path, element: <MisCursosPage /> },
+      { path: ROUTES.ESTUDIANTE.path, element: <MisImpresionesPage /> },
     ],
   },
 ]);
