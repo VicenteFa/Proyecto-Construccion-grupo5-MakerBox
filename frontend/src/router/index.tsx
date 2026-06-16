@@ -11,9 +11,8 @@ import { ReservasPage } from '../pages/ayudante/ReservasPage';
 import { SolicitudPage } from '../pages/ayudante/SolicitudesPage';
 import { MisCursosPage } from '../pages/profesor/MisCursosPage';
 import { MisImpresionesPage } from '../pages/estudiante/MisImpresionesPage';
-
-// temporal
 import { TestUsuarioPage } from '../pages/TestUsuarioPage';
+import { ProtectedRoute } from './ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
@@ -29,7 +28,10 @@ export const router = createBrowserRouter([
       { path: ROUTES.RESERVAS.path, element: <ReservasPage /> },
       { path: ROUTES.SOLICITUD.path, element: <SolicitudPage /> },
       { path: ROUTES.PROFESOR.path, element: <MisCursosPage /> },
-      { path: ROUTES.ESTUDIANTE.path, element: <MisImpresionesPage /> },
+      {
+        element: <ProtectedRoute allowedRoles={['ESTUDIANTE']} />,
+        children: [{ path: ROUTES.ESTUDIANTE.path, element: <MisImpresionesPage /> }],
+      },
     ],
   },
 ]);
