@@ -1,6 +1,6 @@
 import { Form, Input, Button, Typography, Card, Alert, message } from 'antd';
 import { useForm, Controller } from 'react-hook-form';
-import { useNavigate, Link } from 'react-router-dom'; // <-- Añadido el Link aquí
+import { useNavigate, Link } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import type { SubmitHandler } from 'react-hook-form';
