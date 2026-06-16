@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { jwtDecode } from 'jwt-decode';
 
-// Definicion de la interfaz para el payload del JWT
 interface JwtPayload {
   id: string;
   correo: string;
@@ -9,7 +8,6 @@ interface JwtPayload {
   nombre?: string;
 }
 
-// D}Efinicion de la interfaz para el estado de autenticacion
 interface AuthState {
   token: string | null;
   usuario: {
@@ -24,7 +22,6 @@ interface AuthState {
   logout: () => void;
 }
 
-// Funcion para decodificar el token y obtener la informacion del usuario
 const getUsuarioFromToken = (token: string) => {
   try {
     return jwtDecode<JwtPayload>(token);
@@ -33,10 +30,8 @@ const getUsuarioFromToken = (token: string) => {
   }
 };
 
-// Obtener el token del localStorage al cargar la aplicacion
 const tokenGuardado = localStorage.getItem('token');
 
-// Crear el store de autenticacion usando Zustand
 export const useAuthStore = create<AuthState>((set) => ({
   token: tokenGuardado,
   usuario: tokenGuardado ? getUsuarioFromToken(tokenGuardado) : null,

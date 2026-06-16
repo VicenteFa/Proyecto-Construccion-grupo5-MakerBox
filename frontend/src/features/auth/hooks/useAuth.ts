@@ -1,23 +1,21 @@
 import { useState } from 'react';
 import { authService } from '../services/auth.service';
 import { useAuthStore } from '../../../store/auth.store';
-
-// Custom hook para manejar la autenticación
+// Este hook es el que se usa en toda la app para manejar la autenticacion. Provee login, register, logout, y el estado de autenticacion.
 export const useAuth = () => {
-  const { setToken, logout } = useAuthStore();
+  const { setToken, logout, isAuthenticated, usuario } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Funcion para iniciar sesión
+  // El login y register son funciones asincronas que manejan el estado de loading y error, y actualizan el token en el store de  auth
   const login = async (correo: string, passUsuario: string) => {
     setLoading(true);
     setError(null);
     try {
-      // Llamada al servicio de autenticación para obtener el token
       const { token } = await authService.login({ correo, passUsuario });
       setToken(token);
       return true;
     } catch {
-      // Si ocurre un error, se establece un mensaje de error
+      // Si el login falla, se dice un mensaje de error
       setError('Credenciales introducidas incorrectas');
       return false;
     } finally {
@@ -25,7 +23,7 @@ export const useAuth = () => {
     }
   };
 
-  // Funcion para registrar un nuevo usuario
+  // El register es similar al login, pero no actualiza el token. Devuelve true si el registro fue exitoso, o false si hubo un error.
   const register = async (data: {
     rut: string;
     nombre: string;
@@ -36,11 +34,9 @@ export const useAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      // Llamada al servicio de autenticacion para registrar un nuevo usuario
-      await authService.register(data);
+      await authService.register(data); // Si el registro es exitoso, se devuelve true. El usuario debe loguearse despues de registrarse.
       return true;
     } catch {
-      // Si ocurre un error, se establece un mensaje de error
       setError('Error al registrarse');
       return false;
     } finally {
@@ -48,5 +44,5 @@ export const useAuth = () => {
     }
   };
 
-  return { login, register, logout, loading, error };
+  return { login, register, logout, loading, error, isAuthenticated, usuario };
 };

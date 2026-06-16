@@ -1,6 +1,6 @@
 import { Form, Input, Button, Typography, Card, Alert, message } from 'antd';
 import { useForm, Controller } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // <-- Añadido el Link aquí
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import type { SubmitHandler } from 'react-hook-form';
@@ -31,7 +31,7 @@ export const SignUpPage = () => {
     const ok = await register(data);
     if (ok) {
       message.success('¡Cuenta creada exitosamente!');
-      setTimeout(() => navigate(ROUTES.LOGIN.path), 500); // espera 1.5s antes de redirigir
+      setTimeout(() => navigate(ROUTES.LOGIN.path), 500); // espera 0.5s antes de redirigir
     }
   };
 
@@ -117,6 +117,12 @@ export const SignUpPage = () => {
             Sign Up
           </Button>
         </Form.Item>
+        <div style={{ textAlign: 'center', marginTop: 8 }}>
+          ¿Ya tienes cuenta?{' '}
+          <Link to={ROUTES.LOGIN.path} style={{ color: '#1677ff' }}>
+            Inicia sesión
+          </Link>
+        </div>
       </Form>
     </Card>
   );

@@ -1,6 +1,6 @@
 import { Form, Input, Button, Typography, Card, Alert, message } from 'antd';
 import { useForm, Controller } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../features/auth/hooks/useAuth';
@@ -99,6 +99,14 @@ export const LoginPage = () => {
             Login
           </Button>
         </Form.Item>
+
+        {/* Enlace para ir al Registro */}
+        <div style={{ textAlign: 'center', marginTop: 8 }}>
+          ¿No tienes cuenta?{' '}
+          <Link to={ROUTES.SIGN_UP.path} style={{ color: '#1677ff' }}>
+            Regístrate aquí
+          </Link>
+        </div>
       </Form>
     </Card>
   );
