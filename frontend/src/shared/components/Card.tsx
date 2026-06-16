@@ -3,9 +3,10 @@ import type { IImpresion, EstadoSolicitud } from '../../constants/IImpresion';
 
 interface SolicitudCardProps {
   data: IImpresion;
+  onAbrirModal: (data: IImpresion) => void;
 }
 
-export const SolicitudCard: React.FC<SolicitudCardProps> = ({ data }) => {
+export const SolicitudCard: React.FC<SolicitudCardProps> = ({ data, onAbrirModal }) => {
   // Función para asignar colores según el estado
   const getColorPorEstado = (estado: EstadoSolicitud) => {
     switch (estado) {
@@ -22,7 +23,6 @@ export const SolicitudCard: React.FC<SolicitudCardProps> = ({ data }) => {
     }
   };
 
-  // Formatear la fecha para que sea legible
   const fechaFormateada = new Date(data.creadoEn).toLocaleDateString('es-CL');
 
   return (
@@ -40,7 +40,6 @@ export const SolicitudCard: React.FC<SolicitudCardProps> = ({ data }) => {
         gap: '12px',
       }}
     >
-      {/* Encabezado: Nombre y Estado */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#1f2937' }}>
           {data.solicitanteNombre} {data.solicitanteApellido}
@@ -58,8 +57,6 @@ export const SolicitudCard: React.FC<SolicitudCardProps> = ({ data }) => {
           {data.estado}
         </span>
       </div>
-
-      {/* Información Resumida */}
       <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>
         <p style={{ margin: '4px 0' }}>
           <strong>Tipo usuario:</strong> {data.tipoUsuario}
@@ -101,8 +98,6 @@ export const SolicitudCard: React.FC<SolicitudCardProps> = ({ data }) => {
             </a>
           </p>
         )}
-
-        {/* Renderizado condicional: Solo mostrar si hay tiempo estimado */}
         {data.tiempoEstimadoImpresion && (
           <p style={{ margin: '4px 0' }}>
             <strong>Tiempo est.:</strong> {data.tiempoEstimadoImpresion}
@@ -110,8 +105,8 @@ export const SolicitudCard: React.FC<SolicitudCardProps> = ({ data }) => {
         )}
       </div>
 
-      {/* Botón de acción */}
       <button
+        onClick={() => onAbrirModal(data)}
         style={{
           marginTop: 'auto',
           padding: '10px',

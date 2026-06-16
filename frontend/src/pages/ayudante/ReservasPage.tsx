@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { SolicitudCard } from '../../shared/components/Card'; // Ajusta la ruta según tus carpetas
-import type { IImpresion } from '../../constants/IImpresion'; // Ajusta la ruta de tu interfaz
+import { SolicitudCard } from '../../shared/components/Card';
+import type { IImpresion } from '../../constants/IImpresion';
+import { ModalDetalles } from '../../shared/components/ModalImpresion';
 
 export const ReservasPage: React.FC = () => {
-  // Estado para guardar la lista de impresiones
+  //Estado para guardar la lista de impresiones
   const [solicitudes, setSolicitudes] = useState<IImpresion[]>([]);
   const [cargando, setCargando] = useState<boolean>(true);
 
-  // useEffect simula la llamada a tu base de datos al cargar la página
+  const [modalAbierto, setModalAbierto] = useState<boolean>(false);
+  const [solicitudSeleccionada, setSolicitudSeleccionada] = useState<IImpresion | null>(null);
+
+  const manejarAbrirModal = (solicitud: IImpresion) => {
+    setSolicitudSeleccionada(solicitud);
+    setModalAbierto(true);
+  };
+
+  const manejarCerrarModal = () => {
+    setModalAbierto(false);
+    setSolicitudSeleccionada(null); //Limpiamos los datos por seguridad
+  };
+  //useEffect simula la llamada a tu base de datos al cargar la página
   useEffect(() => {
     const obtenerSolicitudes = async () => {
       try {
-        // Aquí iría tu llamada real, por ejemplo:
-        // const respuesta = await fetch('/api/solicitudes');
-        // const datos = await respuesta.json();
-
         // --- INICIO DE DATOS SIMULADOS ---
         const datosSimulados: IImpresion[] = [
           {
@@ -70,7 +79,6 @@ export const ReservasPage: React.FC = () => {
             creadoEn: new Date(Date.now() - 86400000), // Fecha de ayer
           },
         ];
-        // --- FIN DE DATOS SIMULADOS ---
 
         setSolicitudes(datosSimulados);
       } catch (error) {
@@ -89,29 +97,25 @@ export const ReservasPage: React.FC = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1 style={{ marginBottom: '20px', color: '#1f2937' }}>Gestor de Impresiones 3D</h1>
+      <h1>Gestor de Impresiones 3D</h1>
 
-      {/* Contenedor de las tarjetas */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', // Hace que sea responsivo
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '20px',
-          alignItems: 'start',
         }}
       >
-        {/* Aquí es donde ocurre la magia: recorremos el array y creamos una tarjeta por cada uno */}
         {solicitudes.map((solicitud) => (
-          <SolicitudCard key={solicitud.id} data={solicitud} />
+          <SolicitudCard key={solicitud.id} data={solicitud} onAbrirModal={manejarAbrirModal} />
         ))}
-
-        {/* Mensaje por si la base de datos está vacía */}
-        {solicitudes.length === 0 && (
-          <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#6b7280' }}>
-            No hay solicitudes registradas.
-          </p>
-        )}
       </div>
+
+      <ModalDetalles
+        isOpen={modalAbierto}
+        onClose={manejarCerrarModal}
+        data={solicitudSeleccionada}
+      />
     </div>
   );
 };
