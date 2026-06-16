@@ -1,45 +1,48 @@
-import { Layout as AntLayout, Menu } from 'antd';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Layout as AntLayout, Menu, Avatar, Dropdown, Typography } from 'antd';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
-import { useAuth } from '../shared/hooks/useAuth';
+import { useAuth } from '../features/auth/hooks/useAuth';
 
 const { Header, Content, Footer } = AntLayout;
+const { Text } = Typography;
 
 const layoutStyles = { minHeight: '100vh' };
-
 const headerStyles = {
   position: 'sticky',
   top: 0,
   zIndex: 1000,
   width: '100%',
-} as const; //as const previene un warning molesto cuando se usa styles={headerStyles}
-
-const contentStyles = {
-  flex: 1,
   display: 'flex',
-  justifyContent: 'center',
   alignItems: 'center',
-};
+} as const;
 
 const footerStyles = { textAlign: 'center' } as const;
 const menuStyles = { flex: 1, minWidth: 0 };
 
 export const MainLayout = () => {
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { isAuthenticated, usuario, logout } = useAuth();
 
-  const menuItems = [
-    { key: ROUTES.HOME.path, label: <Link to={ROUTES.HOME.path}>Home</Link> },
-    ...(!isAuthenticated
-      ? [
-          { key: ROUTES.LOGIN.path, label: <Link to={ROUTES.LOGIN.path}>Login</Link> },
-          { key: ROUTES.SIGN_UP.path, label: <Link to={ROUTES.SIGN_UP.path}>Sign Up</Link> },
-        ]
-      : []),
-    ...(isAuthenticated && ROUTES.ADMIN.isVisible
-      ? [{ key: ROUTES.ADMIN.path, label: <Link to={ROUTES.ADMIN.path}>Admin</Link> }]
-      : []),
-  ];
+  const handleLogout = () => {
+    logout();
+    navigate(ROUTES.LOGIN.path);
+  };
+
+  const menuItems = [{ key: ROUTES.HOME.path, label: <Link to={ROUTES.HOME.path}>Home</Link> }];
+
+  const dropdownItems = {
+    items: [
+      {
+        key: 'logout',
+        icon: <LogoutOutlined />,
+        label: 'Cerrar sesión',
+        onClick: handleLogout,
+        danger: true,
+      },
+    ],
+  };
 
   return (
     <AntLayout style={layoutStyles}>
@@ -51,9 +54,27 @@ export const MainLayout = () => {
           items={menuItems}
           style={menuStyles}
         />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {isAuthenticated && usuario ? (
+            <Dropdown menu={dropdownItems} placement="bottomRight">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <Text style={{ color: 'white' }}>{usuario.correo}</Text>
+                <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#1677ff' }} />
+              </div>
+            </Dropdown>
+          ) : (
+            <Link to={ROUTES.LOGIN.path}>
+              <Avatar
+                icon={<UserOutlined />}
+                style={{ backgroundColor: '#ffffff33', cursor: 'pointer' }}
+              />
+            </Link>
+          )}
+        </div>
       </Header>
 
-      <Content style={contentStyles}>
+      <Content style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Outlet />
       </Content>
 

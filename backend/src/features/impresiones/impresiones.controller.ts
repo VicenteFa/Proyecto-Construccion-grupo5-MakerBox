@@ -16,12 +16,13 @@ import { AuthGuard } from '../../shared/guards/auth.guard';
 import type { RequestConUsuario } from '../../shared/guards/auth.guard';
 
 @Controller('impresiones')
+// Controlador para manejar las rutas relacionadas con las impresiones 3D
 export class ImpresionesController {
   constructor(private readonly impresionesService: ImpresionesService) {}
 
   @Post()
-  @UseGuards(AuthGuard)
   @UseInterceptors(
+    // Interceptor para manejar la subida  de archivos, con configuracion para almacenar los archivos en el servidor y validar las extensiones y tamanos permitidos
     FileFieldsInterceptor(
       [
         { name: 'modelo3d', maxCount: 1 },
@@ -29,9 +30,8 @@ export class ImpresionesController {
       ],
       {
         storage: diskStorage({
-          destination: './uploads', // Se Creara una carpeta "uploads" en la raiz del proyecto para almacenar los archivos subidos
+          destination: './uploads',
           filename: (_req, file, cb) => {
-            // se agrega la fecha al inicio para que no se sobreescriban archivos con el mismo nombre
             const nombreUnico = `${Date.now()}-${file.originalname}`;
             cb(null, nombreUnico);
           },
@@ -42,6 +42,7 @@ export class ImpresionesController {
           if (extensionesPermitidas.includes(ext)) {
             cb(null, true);
           } else {
+            // Si la extension no es permitida, se rechaza el archivo y se lanza un error
             cb(new Error(`Extensión no permitida: ${ext}`), false);
           }
         },
@@ -49,6 +50,7 @@ export class ImpresionesController {
       },
     ),
   )
+  @UseGuards(AuthGuard) // Protege la ruta para que solo usuarios autenticados puedan acceder
   async crearImpresion(
     @Body() dto: CrearImpresionDto,
     @UploadedFiles()
@@ -58,6 +60,10 @@ export class ImpresionesController {
     },
     @Request() req: RequestConUsuario,
   ) {
+    console.log('FILES:', files);
+    console.log('BODY:', dto);
+    console.log('USUARIO:', req.usuario);
+
     if (!files.modelo3d?.[0] || !files.modeloStl?.[0]) {
       throw new BadRequestException('Se requieren ambos archivos: modelo3d y modeloStl');
     }
