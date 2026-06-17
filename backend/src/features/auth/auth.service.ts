@@ -76,4 +76,42 @@ export class AuthService {
 
     return { token };
   }
+
+  async registrarProfesor(datosRegistro: RegistroDto) {
+    const usuarioExistente = await this.prisma.usuario.findFirst({
+      where: {
+        OR: [{ correo: datosRegistro.correo }, { rut: datosRegistro.rut }],
+      },
+    });
+
+    if (usuarioExistente) {
+      throw new ConflictException('El correo o RUT ya existen');
+    }
+
+    const saltos = 10;
+    const passwordHasheada = await bcrypt.hash(datosRegistro.passUsuario, saltos);
+
+    const nuevoProfesor = await this.prisma.usuario.create({
+      data: {
+        rut: datosRegistro.rut,
+        nombre: datosRegistro.nombre,
+        apellido: datosRegistro.apellido,
+        correo: datosRegistro.correo,
+        passUsuario: passwordHasheada,
+        usuarioRol: TipoRol.PROFESOR,
+      },
+      select: {
+        idUsuario: true,
+        rut: true,
+        nombre: true,
+        apellido: true,
+        correo: true,
+        usuarioRol: true,
+        creadoEn: true,
+        actualizadoEn: true,
+      },
+    });
+
+    return nuevoProfesor;
+  }
 }

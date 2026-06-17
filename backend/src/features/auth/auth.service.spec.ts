@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../shared/prisma/prisma.service';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { TipoRol, Usuario } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const mockPrismaService = {
@@ -26,7 +27,47 @@ describe('AuthService', () => {
     jest.clearAllMocks();
   });
 
-  // Registro de un estudiante
+  it('debería estar definido', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('registrarProfesor', () => {
+    const mockDto = {
+      rut: '11222333-4',
+      nombre: 'Test',
+      apellido: 'Profesor',
+      correo: 'test@universidad.cl',
+      passUsuario: '123456',
+    };
+
+    it('debería crear un profesor exitosamente', async () => {
+      mockPrismaService.usuario.findFirst.mockResolvedValue(null);
+
+      mockPrismaService.usuario.create.mockResolvedValue({
+        idUsuario: 'uuid-123',
+        ...mockDto,
+        usuarioRol: TipoRol.PROFESOR,
+        creadoEn: new Date(),
+        actualizadoEn: new Date(),
+        borradoEn: null,
+      } as Usuario);
+
+      const resultado = await service.registrarProfesor(mockDto);
+
+      expect(resultado).toBeDefined();
+      expect(resultado.usuarioRol).toBe(TipoRol.PROFESOR);
+      expect(mockPrismaService.usuario.create).toHaveBeenCalled();
+    });
+
+    it('debería lanzar ConflictException si el correo o RUT ya existen', async () => {
+      mockPrismaService.usuario.findFirst.mockResolvedValue({
+        idUsuario: 'uuid-existente',
+      } as Usuario);
+
+      await expect(service.registrarProfesor(mockDto)).rejects.toThrow(ConflictException);
+    });
+  });
+
   describe('registrarEstudiante', () => {
     const datosRegistro = {
       rut: '11111111-1',
@@ -66,7 +107,7 @@ describe('AuthService', () => {
 
       expect(mockPrismaService.usuario.create).not.toHaveBeenCalled();
     });
-    // Verificar que la contraseña se hashea antes de guardarla
+
     it('Hashear la contraseña antes de guardarla', async () => {
       mockPrismaService.usuario.findFirst.mockResolvedValue(null);
       mockPrismaService.usuario.create.mockResolvedValue({
@@ -76,14 +117,13 @@ describe('AuthService', () => {
         creadoEn: new Date(),
         actualizadoEn: new Date(),
       });
-      // Espiar la función bcrypt.hash para verificar que se llama con la contraseña y el salt rounds
+
       await service.registrarEstudiante(datosRegistro);
 
-      // Verificamos que la contraseña guardada es un hash valido de bcrypt
       const createMock = mockPrismaService.usuario.create;
-
       const dataGuardada = (createMock.mock.calls[0] as Array<{ data: { passUsuario: string } }>)[0]
         .data;
+
       const esHashValido = await bcrypt.compare(
         datosRegistro.passUsuario,
         dataGuardada.passUsuario,
@@ -92,7 +132,6 @@ describe('AuthService', () => {
     });
   });
 
-  // Login de un usuario
   describe('login', () => {
     const datosLogin = {
       correo: 'carMonte@utalca.cl',

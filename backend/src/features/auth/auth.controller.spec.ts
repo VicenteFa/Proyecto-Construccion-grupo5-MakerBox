@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 
 const mockAuthService = {
@@ -20,8 +21,9 @@ describe('AuthController', () => {
     controller = module.get<AuthController>(AuthController);
   });
 
-  afterEach(() => jest.clearAllMocks());
-
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it('debe estar definido', () => {
     expect(controller).toBeDefined();
   });
@@ -29,10 +31,10 @@ describe('AuthController', () => {
   describe('register', () => {
     it('debe registrar un estudiante exitosamente', async () => {
       const dto = {
-        rut: '12345678-9',
-        nombre: 'Juan',
-        apellido: 'Perez',
-        correo: 'juan@utalca.cl',
+        rut: '20123456-K',
+        nombre: 'Vicente',
+        apellido: 'Farias',
+        correo: 'vfarias@utalca.cl',
         passUsuario: 'password123',
       };
       const resultado = {
@@ -52,10 +54,10 @@ describe('AuthController', () => {
 
     it('debe lanzar ConflictException si el correo o RUT ya existen', async () => {
       const dto = {
-        rut: '12345678-9',
-        nombre: 'Juan',
-        apellido: 'Perez',
-        correo: 'juan@utalca.cl',
+        rut: '20123456-K',
+        nombre: 'Vicente',
+        apellido: 'Farias',
+        correo: 'vfarias@utalca.cl',
         passUsuario: 'password123',
       };
       mockAuthService.registrarEstudiante.mockRejectedValue(
@@ -68,7 +70,7 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('debe retornar un token JWT si las credenciales son correctas', async () => {
-      const dto = { correo: 'juan@utalca.cl', passUsuario: 'password123' };
+      const dto = { correo: 'vfarias@utalca.cl', passUsuario: 'password123' };
       const resultado = { token: 'jwt-token-mock' };
       mockAuthService.login.mockResolvedValue(resultado);
 
@@ -79,7 +81,7 @@ describe('AuthController', () => {
     });
 
     it('debe lanzar UnauthorizedException si las credenciales son incorrectas', async () => {
-      const dto = { correo: 'juan@utalca.cl', passUsuario: 'wrongpassword' };
+      const dto = { correo: 'vfarias@utalca.cl', passUsuario: 'wrongpassword' };
       mockAuthService.login.mockRejectedValue(
         new UnauthorizedException('Credenciales incorrectas'),
       );

@@ -68,6 +68,7 @@ model Usuario {
   impresionesEstudiante Impresion[] @relation("ImpresionEstudiante")
   impresionesAyudante   Impresion[] @relation("ImpresionAyudante")
   reservasAyudante      Reserva[]   @relation("ReservaAyudante")
+  cursosInscritos       Curso[] @relation("EstudiantesCurso")
 
   @@map("usuario")
 }
@@ -84,7 +85,8 @@ model Curso {
   // Relaciones
   profesor Usuario  @relation("CursoProfesor", fields: [refProfesor], references: [idUsuario])
   semestre Semestre @relation(fields: [refSemestre], references: [idSemestre])
-
+  estudiantes Usuario[] @relation("EstudiantesCurso")
+  
   ayudantias  Ayudantia[]
   impresiones Impresion[]
 
