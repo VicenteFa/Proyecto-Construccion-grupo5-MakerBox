@@ -39,6 +39,18 @@ enum EstadoReserva {
   @@map("estado_reserva")
 }
 
+model articulo {
+  id_articulo     String    @id @default(uuid())
+  nombre_articulo String    @db.VarChar(100)
+  stock_actual    Int
+  unidad_medida   String    @db.VarChar(50)
+  alerta_stock    Int
+  notificar_stock Boolean
+  actualizado_en  DateTime? @updatedAt
+
+  @@map("articulo")
+}
+
 model Usuario {
   idUsuario     String    @id @default(uuid()) @map("id_usuario")
   rut           String    @db.VarChar(10)
