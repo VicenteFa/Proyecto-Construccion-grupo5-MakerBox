@@ -2,10 +2,13 @@ import { Form, Input, Button, message } from 'antd';
 import axios from 'axios';
 import { useState } from 'react';
 import { useAuthStore } from '../../store/auth.store';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../constants/routes';
 
 export const CrearCurso = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   const token = useAuthStore((state) => state.token);
 
@@ -17,7 +20,9 @@ export const CrearCurso = () => {
       });
       message.success('Curso creado exitosamente');
       form.resetFields();
-    } catch (error) {
+      navigate(ROUTES.PROFESOR.path);
+    } catch (error: unknown) {
+      console.error(error);
       message.error('Error al crear el curso');
     } finally {
       setLoading(false);

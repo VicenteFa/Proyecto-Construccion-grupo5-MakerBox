@@ -2,18 +2,26 @@ import { Form, Input, Button, message } from 'antd';
 import axios from 'axios';
 import { useState } from 'react';
 
+interface FormularioRegistroProps {
+  rut: string;
+  nombre: string;
+  apellido: string;
+  correo: string;
+  passUsuario: string;
+}
+
 export const RegistrarProfesor = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
-  const onFinish = async (values) => {
+  const onFinish = async (values: FormularioRegistroProps) => {
     setLoading(true);
     try {
-      // Axios lanza un error automáticamente si el status no es 2xx
       await axios.post('http://localhost:3000/api/auth/registrar/profesor', values);
       message.success('Profesor registrado exitosamente');
       form.resetFields(); // Limpia el formulario
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error(error);
       message.error('Error al registrar al profesor');
     } finally {
       setLoading(false);

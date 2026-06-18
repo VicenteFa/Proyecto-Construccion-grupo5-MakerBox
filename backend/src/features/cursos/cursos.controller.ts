@@ -7,6 +7,7 @@ import {
   Param,
   UploadedFile,
   UseInterceptors,
+  Get,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CursosService } from './cursos.service';
@@ -28,6 +29,13 @@ export class CursosController {
     const idProfesor = req.user!.id;
 
     return this.cursosService.crearCurso(idProfesor, dto);
+  }
+
+  @UseGuards(AuthRolesGuard)
+  @Roles(TipoRol.PROFESOR)
+  @Get('mis-cursos')
+  obtenerMisCursos(@Req() req: RequestConUsuario) {
+    return this.cursosService.obtenerCursosProfesor(req.user!.id);
   }
 
   @UseGuards(AuthRolesGuard)

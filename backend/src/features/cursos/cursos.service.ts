@@ -29,6 +29,14 @@ export class CursosService {
 
     return nuevoCurso;
   }
+
+  async obtenerCursosProfesor(idProfesor: string) {
+    return this.prisma.curso.findMany({
+      where: { refProfesor: idProfesor },
+      orderBy: { creadoEn: 'desc' },
+    });
+  }
+
   async cargarEstudiantesCsv(idCurso: string, file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('No se detectó ningún archivo CSV');

@@ -38,7 +38,8 @@ export const CargarEstudiantesCsv = ({ idCurso }: CargarEstudiantesProps) => {
 
       message.success(response.data.mensaje || 'Estudiantes cargados con éxito');
       setFileList([]);
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error(error);
       message.error('Hubo un problema al subir el archivo');
     } finally {
       setUploading(false);

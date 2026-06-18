@@ -14,6 +14,7 @@ import { TestUsuarioPage } from '../pages/TestUsuarioPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { CrearCurso } from '../pages/curso/CrearCurso';
 import { CursoDetallePage } from '../pages/curso/CursoDetalle';
+import { ProfesorDashboard } from '../pages/profesor/ProfesorDashboard';
 
 export const router = createBrowserRouter([
   {
@@ -36,7 +37,8 @@ export const router = createBrowserRouter([
       {
         element: <ProtectedRoute allowedRoles={['PROFESOR']} />,
         children: [
-          { path: ROUTES.PROFESOR.path, element: <CrearCurso /> },
+          { path: ROUTES.PROFESOR.path, element: <ProfesorDashboard /> },
+          { path: '/profesor/nuevo-curso', element: <CrearCurso /> },
           { path: '/profesor/cursos/:idCurso', element: <CursoDetallePage /> },
         ],
       },
