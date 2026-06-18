@@ -9,4 +9,5 @@ export const ROUTES = {
   INVENTARIO: { path: '/inventory', text: 'Inventario', isVisible: false },
   PROFESOR: { path: '/profesor', text: 'Profesor', isVisible: false },
   ESTUDIANTE: { path: '/estudiante', text: 'Estudiante', isVisible: false },
+  CURSOS: { path: '/cursos', text: 'Cursos', isVisible: false },
 } as const;
