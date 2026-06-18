@@ -1,7 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi } from 'vitest';
-import { ModalDetalles } from './ModalImpresion'; // Ajusta la ruta si es necesario
+import { ModalDetalles } from './ModalImpresion';
+import type { IImpresion } from '../../constants/IImpresion';
 
 // Simulamos una solicitud básica
 const mockSolicitud = {
@@ -26,7 +27,7 @@ describe('Componente ModalDetalles', () => {
       <ModalDetalles
         isOpen={true}
         onClose={mockOnClose}
-        data={mockSolicitud as any}
+        data={mockSolicitud as unknown as IImpresion} // Usamos "as any" para evitar problemas de tipado en el test
         onActualizar={mockOnActualizar}
       />,
     );
