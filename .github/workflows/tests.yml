@@ -114,6 +114,7 @@ jobs:
         run: |
           npx prisma generate
           npx prisma db push --accept-data-loss
+          npm run build 
           npm run start &
           npx wait-on http://localhost:3000/api/auth/login --timeout 30000
       - name: Ejecutar k6 (Backend)
@@ -156,10 +157,3 @@ jobs:
           filename: frontend/test/load-test.js
         env:
           BASE_URL: "http://localhost:4173"
-      - name: Guardar Reporte HTML Frontend
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: k6-frontend-report
-          path: summary.html
-          retention-days: 7
