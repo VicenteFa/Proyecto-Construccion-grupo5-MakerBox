@@ -9,10 +9,11 @@ import { AyudanteMainPage } from '../pages/ayudante/AyudanteMainPage';
 import { InventarioPage } from '../pages/ayudante/InventarioPage';
 import { ReservasPage } from '../pages/ayudante/ReservasPage';
 import { SolicitudPage } from '../pages/ayudante/SolicitudesPage';
-import { MisCursosPage } from '../pages/profesor/MisCursosPage';
 import { MisImpresionesPage } from '../pages/estudiante/MisImpresionesPage';
 import { TestUsuarioPage } from '../pages/TestUsuarioPage';
 import { ProtectedRoute } from './ProtectedRoute';
+import { CrearCurso } from '../pages/curso/CrearCurso';
+import { CursoDetallePage } from '../pages/curso/CursoDetalle';
 
 export const router = createBrowserRouter([
   {
@@ -27,10 +28,17 @@ export const router = createBrowserRouter([
       { path: ROUTES.INVENTARIO.path, element: <InventarioPage /> },
       { path: ROUTES.RESERVAS.path, element: <ReservasPage /> },
       { path: ROUTES.SOLICITUD.path, element: <SolicitudPage /> },
-      { path: ROUTES.PROFESOR.path, element: <MisCursosPage /> },
+
       {
         element: <ProtectedRoute allowedRoles={['ESTUDIANTE']} />,
         children: [{ path: ROUTES.ESTUDIANTE.path, element: <MisImpresionesPage /> }],
+      },
+      {
+        element: <ProtectedRoute allowedRoles={['PROFESOR']} />,
+        children: [
+          { path: ROUTES.PROFESOR.path, element: <CrearCurso /> },
+          { path: '/profesor/cursos/:idCurso', element: <CursoDetallePage /> },
+        ],
       },
     ],
   },
