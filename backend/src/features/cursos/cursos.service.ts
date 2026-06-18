@@ -4,12 +4,8 @@ import { CrearCursoDto } from './cursos.dto';
 
 import { TipoRol } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import csvParser from 'csv-parser';
-import { Readable, Transform } from 'stream';
-
-const parseCSV =
-  (csvParser as unknown as { default?: () => Transform }).default ??
-  (csvParser as unknown as () => Transform);
+import { Readable } from 'stream';
+import csv from 'csv-parser';
 
 interface DatosEstudiante {
   rut: string;
@@ -44,9 +40,11 @@ export class CursosService {
 
     return new Promise((resolve, reject) => {
       stream
-        .pipe(parseCSV())
+        .pipe(csv())
         .on('data', (row: Record<string, string>) => {
           const keys = Object.keys(row);
+
+          console.log('Row recibida:', row);
 
           const rutKey = keys.find((k) => k.includes('Nombre de us'));
           const correoKey = keys.find((k) => k.includes('Dirección de'));
@@ -63,6 +61,8 @@ export class CursosService {
           }
         })
         .on('end', () => {
+          console.log('Total procesados:', estudiantesProcesados.length);
+
           const procesarEnBaseDeDatos = async () => {
             let inscritos = 0;
 
@@ -100,10 +100,12 @@ export class CursosService {
             resolve({ mensaje: `Éxito. Se inscribieron ${inscritos} estudiantes en el curso.` });
           };
           procesarEnBaseDeDatos().catch((error: unknown) => {
+            console.error('Error en DB:', error);
             reject(error instanceof Error ? error : new Error(String(error)));
           });
         })
         .on('error', (error: Error) => {
+          console.error('Error CSV:', error);
           reject(new BadRequestException('Error al leer el archivo CSV: ' + error.message));
         });
     });
