@@ -16,6 +16,7 @@ export const ModalDetalles: React.FC<ModalDetallesProps> = ({
   data,
   onActualizar,
 }) => {
+  // Estados locales para los inputs del modal
   const [estadoEditado, setEstadoEditado] = useState<EstadoSolicitud>(data?.estado ?? 'PENDIENTE');
   const [observacionEditada, setObservacionEditada] = useState<string>(
     data?.observacionAyudante || '',
@@ -66,8 +67,11 @@ export const ModalDetalles: React.FC<ModalDetallesProps> = ({
 
             {/* Selector de Estado */}
             <div>
-              <label className="modal-label">Actualizar Estado:</label>
+              <label htmlFor="estado-select" className="modal-label">
+                Actualizar Estado:
+              </label>
               <select
+                id="estado-select"
                 value={estadoEditado}
                 onChange={(e) => setEstadoEditado(e.target.value as EstadoSolicitud)}
                 className="modal-input"
@@ -81,8 +85,11 @@ export const ModalDetalles: React.FC<ModalDetallesProps> = ({
 
             {/* Comentario del Ayudante */}
             <div>
-              <label className="modal-label">Observación / Motivo:</label>
+              <label htmlFor="observacion-textarea" className="modal-label">
+                Observación / Motivo:
+              </label>
               <textarea
+                id="observacion-textarea"
                 value={observacionEditada}
                 onChange={(e) => setObservacionEditada(e.target.value)}
                 placeholder="Escribe aquí si hay algún problema con la malla, o si está lista para retirar..."

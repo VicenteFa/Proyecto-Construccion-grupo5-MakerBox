@@ -33,13 +33,18 @@ export class ImpresionesService {
    * @param estado Nuevo estado a asignar
    * @returns La impresion actualizada
    */
-  async cambiarEstado(idImpresion: string, estado: EstadoImpresion): Promise<Impresion> {
+  async cambiarEstado(
+    idImpresion: string,
+    estado: EstadoImpresion,
+    observacionAyudante?: string,
+  ): Promise<Impresion> {
     return await this.prisma.impresion.update({
       where: {
         idImpresion: idImpresion,
       },
       data: {
         estado: estado,
+        observacionAyudante: observacionAyudante,
       },
     });
   }
