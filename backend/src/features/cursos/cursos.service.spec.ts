@@ -26,7 +26,7 @@ describe('CursosService', () => {
     prisma = module.get<PrismaService>(PrismaService);
   });
 
-  it('debería crear un curso y vincularlo al profesor', async () => {
+  it('debe crear un curso y vincularlo al profesor', async () => {
     const idProfesor = 'uuid-profesor-123';
     const mockDto = { nombre: 'Software', refSemestre: 'uuid-semestre' };
 

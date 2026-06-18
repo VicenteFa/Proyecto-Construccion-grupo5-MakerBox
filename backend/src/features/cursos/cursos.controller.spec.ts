@@ -16,6 +16,7 @@ describe('CursosController', () => {
           provide: CursosService,
           useValue: {
             crearCurso: jest.fn(),
+            cargarEstudiantesCsv: jest.fn(),
           },
         },
       ],
@@ -29,7 +30,6 @@ describe('CursosController', () => {
     const mockDto = { nombre: 'Software', refSemestre: 'uuid-semestre' };
     const idProfesor = 'uuid-profesor-123';
 
-    // Simulamos la request modificada por el Guard
     const mockRequest = {
       user: { id: idProfesor, correo: 'test@test.com', rol: TipoRol.PROFESOR },
     } as RequestConUsuario;
@@ -49,5 +49,27 @@ describe('CursosController', () => {
 
     expect(resultado).toEqual(mockRespuesta);
     expect(crearCursoSpy).toHaveBeenCalledWith(idProfesor, mockDto);
+  });
+
+  it('debe llamar al servicio para cargar estudiantes desde un CSV', async () => {
+    const idCurso = 'uuid-curso-123';
+
+    const mockFile = {
+      fieldname: 'file',
+      originalname: 'estudiantes.csv',
+      encoding: '7bit',
+      mimetype: 'text/csv',
+      buffer: Buffer.from('Nombre,Apellido\nTest,Prueba'),
+      size: 100,
+    } as Express.Multer.File;
+
+    const mockRespuesta = { mensaje: 'Exito. Se inscribieron 1 estudiantes en el curso.' };
+
+    const cargarSpy = jest.spyOn(service, 'cargarEstudiantesCsv').mockResolvedValue(mockRespuesta);
+
+    const resultado = await controller.cargarEstudiantes(idCurso, mockFile);
+
+    expect(resultado).toEqual(mockRespuesta);
+    expect(cargarSpy).toHaveBeenCalledWith(idCurso, mockFile);
   });
 });
