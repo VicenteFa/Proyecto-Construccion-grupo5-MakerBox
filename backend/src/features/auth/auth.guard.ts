@@ -11,13 +11,13 @@ import { TipoRol } from '@prisma/client';
 import { ROLES_KEY } from './roles.decorator';
 import { Request } from 'express';
 
-interface TokenPayload {
+export interface TokenPayload {
   id: string;
   correo: string;
   rol: TipoRol;
 }
 
-interface RequestConUsuario extends Request {
+export interface RequestConUsuario extends Request {
   user?: TokenPayload;
 }
 
