@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   UseGuards,
   Request,
@@ -19,6 +20,11 @@ import type { RequestConUsuario } from '../../shared/guards/auth.guard';
 export class ImpresionesController {
   constructor(private readonly impresionesService: ImpresionesService) {}
 
+  //Obtenemos todas las impresiones con el @Get
+  @Get()
+  async obtenerTodasLasImpresiones(): Promise<any> {
+    return this.impresionesService.obtenerTodas();
+  }
   @Post()
   @UseGuards(AuthGuard)
   @UseInterceptors(

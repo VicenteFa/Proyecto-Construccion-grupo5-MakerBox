@@ -1,5 +1,6 @@
 import React from 'react';
 import type { IImpresion } from '../../constants/IImpresion';
+import '../../assets/styles/ModalImpresionStyles.css';
 
 interface ModalDetallesProps {
   isOpen: boolean;
@@ -12,65 +13,17 @@ export const ModalDetalles: React.FC<ModalDetallesProps> = ({ isOpen, onClose, d
   if (!isOpen || !data) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro semitransparente
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: '#fff',
-          padding: '24px',
-          borderRadius: '12px',
-          width: '90%',
-          maxWidth: '600px',
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            borderBottom: '1px solid #eee',
-            paddingBottom: '12px',
-            marginBottom: '16px',
-          }}
-        >
-          <h2 style={{ margin: 0 }}>Detalles de la Solicitud</h2>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '1.5rem',
-              cursor: 'pointer',
-              color: '#6b7280',
-            }}
-          >
+    <div className="modal-overlay">
+      <div className="modal-contenido">
+        <div className="modal-cabecera">
+          <h2 className="modal-titulo">Detalles de la Solicitud</h2>
+          <button onClick={onClose} className="modal-boton-cerrar">
             &times;
           </button>
         </div>
 
-        <div style={{ display: 'grid', gap: '12px', color: '#374151' }}>
-          <div
-            style={{
-              backgroundColor: '#f3f4f6',
-              padding: '12px',
-              borderRadius: '8px',
-              marginTop: '12px',
-            }}
-          >
+        <div className="modal-cuerpo">
+          <div className="modal-caja-gris">
             <p>
               <strong>Solicitante:</strong> {data.solicitanteNombre} {data.solicitanteApellido}
             </p>
@@ -94,34 +47,18 @@ export const ModalDetalles: React.FC<ModalDetallesProps> = ({ isOpen, onClose, d
               <strong>Comentario técnico:</strong> {data.comentarioTecnico}
             </p>
           </div>
-          <div style={{ marginTop: '12px', display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <a
-              href={data.urlModelo3d}
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: '#3b82f6', marginRight: '16px' }}
-            >
+
+          <div className="modal-enlaces-contenedor">
+            <a href={data.urlModelo3d} target="_blank" rel="noreferrer" className="modal-enlace">
               Ver Modelo 3D
             </a>
-            <a
-              href={data.urlModeloStl}
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: '#3b82f6' }}
-            >
+            <a href={data.urlModeloStl} target="_blank" rel="noreferrer" className="modal-enlace">
               Descargar STL
             </a>
           </div>
 
           {data.observacionAyudante && (
-            <div
-              style={{
-                backgroundColor: '#f3f4f6',
-                padding: '12px',
-                borderRadius: '8px',
-                marginTop: '12px',
-              }}
-            >
+            <div className="modal-caja-gris">
               <strong>Observación Ayudante:</strong> <br />
               {data.observacionAyudante}
             </div>

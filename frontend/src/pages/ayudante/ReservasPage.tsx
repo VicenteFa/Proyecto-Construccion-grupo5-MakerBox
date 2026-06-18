@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { SolicitudCard } from '../../shared/components/Card';
+import { SolicitudCard } from '../../shared/components/CardImpresion';
 import type { IImpresion } from '../../constants/IImpresion';
 import { ModalDetalles } from '../../shared/components/ModalImpresion';
 
+// Importamos el servicio que acabamos de crear
+import { obtenerTodasLasImpresiones } from '../../services/getImpresiones';
+
 export const ReservasPage: React.FC = () => {
-  //Estado para guardar la lista de impresiones
   const [solicitudes, setSolicitudes] = useState<IImpresion[]>([]);
   const [cargando, setCargando] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null); // Agregamos estado para manejar errores
 
   const [modalAbierto, setModalAbierto] = useState<boolean>(false);
   const [solicitudSeleccionada, setSolicitudSeleccionada] = useState<IImpresion | null>(null);
@@ -18,78 +21,37 @@ export const ReservasPage: React.FC = () => {
 
   const manejarCerrarModal = () => {
     setModalAbierto(false);
-    setSolicitudSeleccionada(null); //Limpiamos los datos por seguridad
+    setSolicitudSeleccionada(null);
   };
-  //useEffect simula la llamada a tu base de datos al cargar la página
-  useEffect(() => {
-    const obtenerSolicitudes = async () => {
-      try {
-        // --- INICIO DE DATOS SIMULADOS ---
-        const datosSimulados: IImpresion[] = [
-          {
-            id: '1',
-            solicitanteNombre: 'Juan',
-            solicitanteApellido: 'Pérez',
-            solicitanteCorreo: 'juan@correo.cl',
-            solicitanteRut: '12345678-9',
-            refEstudiante: 'EST-001',
-            refAyudante: 'AYU-002',
-            tipoUsuario: 'ALUMNO',
-            tipoSolicitud: 'PROYECTO',
-            nombreCurso: 'Diseño Industrial',
-            refCurso: 'CUR-001',
-            colorOpcion1: 'Negro',
-            colorOpcion2: 'Blanco',
-            colorOpcion3: 'Gris',
-            comentarioTecnico: 'Relleno al 20%',
-            urlModelo3d: 'https://link.com/3d',
-            urlModeloStl: 'https://link.com/stl',
-            comentario: 'Es para el proyecto final.',
-            estado: 'PENDIENTE',
-            observacionAyudante: '',
-            motivoRechazo: '',
-            tiempoEstimadoImpresion: '4 horas',
-            inicioImpresion: null,
-            creadoEn: new Date(),
-          },
-          {
-            id: '2',
-            solicitanteNombre: 'María',
-            solicitanteApellido: 'González',
-            solicitanteCorreo: 'maria@correo.cl',
-            solicitanteRut: '9876543-2',
-            refEstudiante: 'EST-002',
-            refAyudante: 'AYU-002',
-            tipoUsuario: 'ALUMNO',
-            tipoSolicitud: 'PERSONAL',
-            nombreCurso: 'Arquitectura',
-            refCurso: 'CUR-005',
-            colorOpcion1: 'Rojo',
-            colorOpcion2: 'Azul',
-            colorOpcion3: 'Transparente',
-            comentarioTecnico: 'Usar soportes en árbol',
-            urlModelo3d: 'https://link.com/3d-2',
-            urlModeloStl: 'https://link.com/stl-2',
-            comentario: 'Maqueta a escala.',
-            estado: 'IMPRIMIENDO',
-            observacionAyudante: 'Revisado, modelo correcto.',
-            motivoRechazo: '',
-            tiempoEstimadoImpresion: '12 horas',
-            inicioImpresion: new Date(),
-            creadoEn: new Date(Date.now() - 86400000), // Fecha de ayer
-          },
-        ];
 
-        setSolicitudes(datosSimulados);
+  useEffect(() => {
+    const cargarSolicitudes = async () => {
+      try {
+        // Iniciamos la carga
+        setCargando(true);
+        setError(null);
+
+        // Llamamos al archivo de servicio externo
+        const datos = await obtenerTodasLasImpresiones();
+
+        // Guardamos los datos reales en el estado
+        setSolicitudes(datos);
       } catch (error) {
+        // Si el servidor falla, guardamos el error para mostrarlo en pantalla
         console.error('Error al cargar las solicitudes:', error);
+        setError('No se pudieron cargar las solicitudes. Intente más tarde.');
       } finally {
         setCargando(false);
       }
     };
 
-    obtenerSolicitudes();
+    cargarSolicitudes();
   }, []);
+
+  // Renderizado condicional si hay error
+  if (error) {
+    return <div style={{ padding: '20px', textAlign: 'center', color: 'red' }}>{error}</div>;
+  }
 
   if (cargando) {
     return <div style={{ padding: '20px', textAlign: 'center' }}>Cargando solicitudes...</div>;
@@ -106,9 +68,15 @@ export const ReservasPage: React.FC = () => {
           gap: '20px',
         }}
       >
-        {solicitudes.map((solicitud) => (
-          <SolicitudCard key={solicitud.id} data={solicitud} onAbrirModal={manejarAbrirModal} />
-        ))}
+        {solicitudes.length > 0 ? (
+          solicitudes.map((solicitud) => (
+            <SolicitudCard key={solicitud.id} data={solicitud} onAbrirModal={manejarAbrirModal} />
+          ))
+        ) : (
+          <p style={{ gridColumn: '1 / -1', textAlign: 'center' }}>
+            No hay solicitudes registradas.
+          </p>
+        )}
       </div>
 
       <ModalDetalles
