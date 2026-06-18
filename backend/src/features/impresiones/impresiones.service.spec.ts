@@ -3,12 +3,53 @@ import { ImpresionesService } from './impresiones.service';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { EstadoImpresion, Impresion } from '@prisma/client';
 
-// Mock de PrismaService
 const mockPrismaService = {
   impresion: {
     update: jest.fn(),
   },
 };
+describe('ImpresionesService', () => {
+  let service: ImpresionesService;
+
+  const mockPrismaService = {
+    impresion: {
+      update: jest.fn(),
+    },
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [ImpresionesService, { provide: PrismaService, useValue: mockPrismaService }],
+    }).compile();
+
+    service = module.get<ImpresionesService>(ImpresionesService);
+  });
+
+  it('debería actualizar el estado de una impresión exitosamente', async () => {
+    const idPrueba = 'a814a77a-b70c-461d-8f43-912b54e8384b';
+    const nuevoEstado = EstadoImpresion.IMPRIMIENDO;
+    const nuevaObservacion = 'El modelo pasó la revisión de malla';
+
+    mockPrismaService.impresion.update.mockResolvedValue({
+      idImpresion: idPrueba,
+      estado: nuevoEstado,
+      observacionAyudante: nuevaObservacion,
+    });
+
+    const resultado = await service.cambiarEstado(idPrueba, nuevoEstado, nuevaObservacion);
+
+    expect(mockPrismaService.impresion.update).toHaveBeenCalledWith({
+      where: { idImpresion: idPrueba },
+      data: {
+        estado: nuevoEstado,
+        observacionAyudante: nuevaObservacion,
+      },
+    });
+
+    expect(resultado.estado).toEqual(nuevoEstado);
+    expect(resultado.observacionAyudante).toEqual(nuevaObservacion);
+  });
+});
 
 describe('ImpresionesService', () => {
   let service: ImpresionesService;
@@ -35,6 +76,7 @@ describe('ImpresionesService', () => {
 
   it('debe estar definido', () => {
     expect(service).toBeDefined();
+    expect(prisma).toBeDefined();
   });
 
   describe('cambiarEstado', () => {

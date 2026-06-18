@@ -7,7 +7,6 @@ import { CrearImpresionDto } from './impresiones.dto';
 export class ImpresionesService {
   constructor(private prisma: PrismaService) {}
 
-  // Crea una nueva impresion con los datos
   async crearImpresion(
     dto: CrearImpresionDto,
     refEstudiante: string,
@@ -15,7 +14,6 @@ export class ImpresionesService {
     urlModeloStl: string,
   ): Promise<Impresion> {
     return await this.prisma.impresion.create({
-      // Crea una nueva impresion en la base de datos
       data: {
         colorOpcion1: dto.colorOpcion1,
         colorOpcion2: dto.colorOpcion2,
@@ -35,13 +33,39 @@ export class ImpresionesService {
    * @param estado Nuevo estado a asignar
    * @returns La impresion actualizada
    */
-  async cambiarEstado(idImpresion: string, estado: EstadoImpresion): Promise<Impresion> {
+  async cambiarEstado(
+    idImpresion: string,
+    estado: EstadoImpresion,
+    observacionAyudante?: string,
+  ): Promise<Impresion> {
     return await this.prisma.impresion.update({
       where: {
         idImpresion: idImpresion,
       },
       data: {
         estado: estado,
+        observacionAyudante: observacionAyudante,
+      },
+    });
+  }
+
+  async obtenerTodas(): Promise<Impresion[]> {
+    const impresiones = await this.prisma.impresion.findMany({
+      orderBy: {
+        creadoEn: 'desc',
+      },
+    });
+
+    return impresiones;
+  }
+  async actualizarEstado(id: string, nuevoEstado: EstadoImpresion, nuevaObservacion: string) {
+    return this.prisma.impresion.update({
+      where: {
+        idImpresion: id, // Busca el registro por su llave primaria real
+      },
+      data: {
+        estado: nuevoEstado,
+        observacionAyudante: nuevaObservacion,
       },
     });
   }

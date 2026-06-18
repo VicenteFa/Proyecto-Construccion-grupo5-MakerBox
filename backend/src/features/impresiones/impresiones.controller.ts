@@ -1,12 +1,15 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   UseGuards,
   Request,
   UseInterceptors,
   UploadedFiles,
   BadRequestException,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -14,12 +17,29 @@ import { ImpresionesService } from './impresiones.service';
 import { CrearImpresionDto } from './impresiones.dto';
 import { AuthGuard } from '../../shared/guards/auth.guard';
 import type { RequestConUsuario } from '../../shared/guards/auth.guard';
+import { EstadoImpresion } from '@prisma/client';
 
 @Controller('impresiones')
 // Controlador para manejar las rutas relacionadas con las impresiones 3D
 export class ImpresionesController {
   constructor(private readonly impresionesService: ImpresionesService) {}
 
+  // 1. Obtenemos todas las impresiones
+  @Get()
+  async obtenerTodasLasImpresiones(): Promise<any> {
+    return this.impresionesService.obtenerTodas();
+  }
+
+  // 2. ACTUALIZAMOS UNA IMPRESIÓN (Separado y limpio)
+  @Patch(':id')
+  async actualizarImpresion(
+    @Param('id') id: string,
+    @Body() datos: { estado: EstadoImpresion; observacionAyudante: string },
+  ) {
+    return this.impresionesService.cambiarEstado(id, datos.estado);
+  }
+
+  // 3. CREAMOS UNA IMPRESIÓN (El @Post y los Interceptors van juntos pegados a la función)
   @Post()
   @UseInterceptors(
     // Interceptor para manejar la subida  de archivos, con configuracion para almacenar los archivos en el servidor y validar las extensiones y tamanos permitidos
@@ -46,7 +66,7 @@ export class ImpresionesController {
             cb(new Error(`Extensión no permitida: ${ext}`), false);
           }
         },
-        limits: { fileSize: 50 * 1024 * 1024 }, // Limite de 50MB por archivo
+        limits: { fileSize: 50 * 1024 * 1024 },
       },
     ),
   )
