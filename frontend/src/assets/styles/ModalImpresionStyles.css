@@ -81,3 +81,50 @@
   text-decoration: underline;
   color: #2563eb;
 }
+
+.modal-acciones-contenedor {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-acciones-titulo {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.modal-label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.modal-textarea {
+  resize: vertical;
+}
+
+.modal-boton-guardar {
+  padding: 12px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 8px;
+  transition: background-color 0.2s;
+}
+
+.modal-boton-guardar:hover {
+  background-color: #2563eb;
+}

@@ -53,4 +53,15 @@ export class ImpresionesService {
 
     return impresiones;
   }
+  async actualizarEstado(id: string, nuevoEstado: EstadoImpresion, nuevaObservacion: string) {
+    return this.prisma.impresion.update({
+      where: {
+        idImpresion: id, // Busca el registro por su llave primaria real
+      },
+      data: {
+        estado: nuevoEstado,
+        observacionAyudante: nuevaObservacion,
+      },
+    });
+  }
 }

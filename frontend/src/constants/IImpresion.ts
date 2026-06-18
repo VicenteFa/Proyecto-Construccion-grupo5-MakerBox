@@ -1,7 +1,7 @@
 export type EstadoSolicitud = 'PENDIENTE' | 'IMPRIMIENDO' | 'FINALIZADA' | 'RECHAZADA';
 
 export interface IImpresion {
-  id: string;
+  idImpresion: string;
   solicitanteNombre: string;
   solicitanteApellido: string;
   solicitanteCorreo: string;

@@ -1,4 +1,4 @@
-import type { IImpresion } from '../constants/IImpresion';
+import type { EstadoSolicitud, IImpresion } from '../constants/IImpresion';
 
 const API_URL = 'http://localhost:3000/api/impresiones';
 
@@ -25,4 +25,16 @@ export const obtenerTodasLasImpresiones = async (): Promise<IImpresion[]> => {
     console.error('Error al obtener las impresiones desde el servicio:', error);
     throw error;
   }
+};
+export const actualizarEstadoImpresionDB = async (
+  id: string,
+  estado: EstadoSolicitud,
+  observacion: string,
+) => {
+  const respuesta = await fetch(`${API_URL}/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ estado, observacionAyudante: observacion }),
+  });
+  return await respuesta.json();
 };

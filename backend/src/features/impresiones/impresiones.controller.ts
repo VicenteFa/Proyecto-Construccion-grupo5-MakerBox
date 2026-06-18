@@ -8,6 +8,8 @@ import {
   UseInterceptors,
   UploadedFiles,
   BadRequestException,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -15,16 +17,28 @@ import { ImpresionesService } from './impresiones.service';
 import { CrearImpresionDto } from './impresiones.dto';
 import { AuthGuard } from '../../shared/guards/auth.guard';
 import type { RequestConUsuario } from '../../shared/guards/auth.guard';
+import { EstadoImpresion } from '@prisma/client';
 
 @Controller('impresiones')
 export class ImpresionesController {
   constructor(private readonly impresionesService: ImpresionesService) {}
 
-  //Obtenemos todas las impresiones con el @Get
+  // 1. Obtenemos todas las impresiones
   @Get()
   async obtenerTodasLasImpresiones(): Promise<any> {
     return this.impresionesService.obtenerTodas();
   }
+
+  // 2. ACTUALIZAMOS UNA IMPRESIÓN (Separado y limpio)
+  @Patch(':id')
+  async actualizarImpresion(
+    @Param('id') id: string,
+    @Body() datos: { estado: EstadoImpresion; observacionAyudante: string },
+  ) {
+    return this.impresionesService.cambiarEstado(id, datos.estado);
+  }
+
+  // 3. CREAMOS UNA IMPRESIÓN (El @Post y los Interceptors van juntos pegados a la función)
   @Post()
   @UseGuards(AuthGuard)
   @UseInterceptors(
@@ -35,9 +49,8 @@ export class ImpresionesController {
       ],
       {
         storage: diskStorage({
-          destination: './uploads', // Se Creara una carpeta "uploads" en la raiz del proyecto para almacenar los archivos subidos
+          destination: './uploads',
           filename: (_req, file, cb) => {
-            // se agrega la fecha al inicio para que no se sobreescriban archivos con el mismo nombre
             const nombreUnico = `${Date.now()}-${file.originalname}`;
             cb(null, nombreUnico);
           },
@@ -51,7 +64,7 @@ export class ImpresionesController {
             cb(new Error(`Extensión no permitida: ${ext}`), false);
           }
         },
-        limits: { fileSize: 50 * 1024 * 1024 }, // Limite de 50MB por archivo
+        limits: { fileSize: 50 * 1024 * 1024 },
       },
     ),
   )

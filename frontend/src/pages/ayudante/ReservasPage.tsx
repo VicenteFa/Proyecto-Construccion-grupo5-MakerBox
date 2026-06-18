@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { SolicitudCard } from '../../shared/components/CardImpresion';
-import type { IImpresion } from '../../constants/IImpresion';
+import type { EstadoSolicitud, IImpresion } from '../../constants/IImpresion';
 import { ModalDetalles } from '../../shared/components/ModalImpresion';
+import {
+  obtenerTodasLasImpresiones,
+  actualizarEstadoImpresionDB,
+} from '../../services/getImpresiones';
 
-// Importamos el servicio que acabamos de crear
-import { obtenerTodasLasImpresiones } from '../../services/getImpresiones';
+const ModalDetallesAny = ModalDetalles as React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  data: IImpresion | null;
+  onActualizar: (id: string, estado: EstadoSolicitud, observacion: string) => void;
+}>;
 
 export const ReservasPage: React.FC = () => {
   const [solicitudes, setSolicitudes] = useState<IImpresion[]>([]);
@@ -22,6 +30,37 @@ export const ReservasPage: React.FC = () => {
   const manejarCerrarModal = () => {
     setModalAbierto(false);
     setSolicitudSeleccionada(null);
+  };
+
+  const manejarActualizacionSolicitud = async (
+    idImpresion: string,
+    nuevoEstado: EstadoSolicitud,
+    nuevaObservacion: string,
+  ) => {
+    try {
+      await fetch(`http://localhost:3000/api/impresiones/${idImpresion}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado: nuevoEstado, observacionAyudante: nuevaObservacion }),
+      });
+      await actualizarEstadoImpresionDB(idImpresion, nuevoEstado, nuevaObservacion);
+
+      // 2. Actualizamos el estado local de React para que la tarjeta cambie de color inmediatamente
+      // sin tener que recargar la página.
+      setSolicitudes((solicitudesAnteriores) =>
+        solicitudesAnteriores.map((solicitud) =>
+          solicitud.idImpresion === idImpresion
+            ? { ...solicitud, estado: nuevoEstado, observacionAyudante: nuevaObservacion }
+            : solicitud,
+        ),
+      );
+
+      // Opcional: Mostrar una alerta de éxito
+      console.log('¡Solicitud actualizada con éxito!');
+    } catch (error) {
+      console.error('Error al actualizar la solicitud:', error);
+      alert('Hubo un error al guardar los cambios.');
+    }
   };
 
   useEffect(() => {
@@ -70,7 +109,11 @@ export const ReservasPage: React.FC = () => {
       >
         {solicitudes.length > 0 ? (
           solicitudes.map((solicitud) => (
-            <SolicitudCard key={solicitud.id} data={solicitud} onAbrirModal={manejarAbrirModal} />
+            <SolicitudCard
+              key={solicitud.idImpresion}
+              data={solicitud}
+              onAbrirModal={manejarAbrirModal}
+            />
           ))
         ) : (
           <p style={{ gridColumn: '1 / -1', textAlign: 'center' }}>
@@ -79,11 +122,14 @@ export const ReservasPage: React.FC = () => {
         )}
       </div>
 
-      <ModalDetalles
-        isOpen={modalAbierto}
-        onClose={manejarCerrarModal}
-        data={solicitudSeleccionada}
-      />
+      {modalAbierto && solicitudSeleccionada && (
+        <ModalDetallesAny
+          isOpen={modalAbierto}
+          onClose={manejarCerrarModal}
+          data={solicitudSeleccionada}
+          onActualizar={manejarActualizacionSolicitud}
+        />
+      )}
     </div>
   );
 };
