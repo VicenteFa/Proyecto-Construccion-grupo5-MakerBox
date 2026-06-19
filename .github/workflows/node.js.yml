@@ -110,7 +110,7 @@ jobs:
 
       - name: Instalar dependencias
         env:
-          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb" # ← agregado
+          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb"
         run: npm ci
 
       - name: Migrar DB de test

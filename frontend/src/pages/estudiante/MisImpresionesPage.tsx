@@ -138,7 +138,7 @@ export const MisImpresionesPage = () => {
             control={control}
             rules={{ required: 'Añade una descripción' }}
             render={({ field }) => (
-              <TextArea {...field} rows={4} placeholder="Instrucciones para el ayudante..." />
+              <TextArea {...field} rows={4} placeholder="Instrucciones para la impresión" />
             )}
           />
         </Form.Item>
