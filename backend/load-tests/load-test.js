@@ -1,4 +1,3 @@
-/* eslint-disable */
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Rate } from 'k6/metrics';
@@ -47,7 +46,7 @@ export default function () {
 export function handleSummary(data) {
   return {
     // Genera el archivo HTML
-    'test/reporte.html': htmlReport(data),
+    'load-tests/reporte.html': htmlReport(data),
     // Mantiene el resumen de texto en la consola
     stdout: textSummary(data, { indent: ' ', enableColors: true }),
   };
