@@ -53,7 +53,7 @@ model articulo {
 
 model Usuario {
   idUsuario     String    @id @default(uuid()) @map("id_usuario")
-  rut           String    @db.VarChar(10)
+  rut           String    @db.VarChar(20)
   nombre        String    @db.VarChar(100)
   apellido      String    @db.VarChar(100)
   correo        String    @db.VarChar(100)
@@ -115,7 +115,7 @@ model Impresion {
   solicitanteNombre       String?         @map("solicitante_nombre") @db.VarChar(50)
   solicitanteApellido     String?         @map("solicitante_apellido") @db.VarChar(50)
   solicitanteCorreo       String?         @map("solicitante_correo") @db.VarChar(100)
-  solicitanteRut          String?         @map("solicitante_rut") @db.VarChar(10)
+  solicitanteRut          String?         @map("solicitante_rut") @db.VarChar(20)
   refEstudiante           String?         @map("ref_estudiante")
   refAyudante             String?         @map("ref_ayudante")
   tipoUsuario             String?         @map("tipo_usuario") @db.VarChar(50)
@@ -150,7 +150,7 @@ model Reserva {
   solicitanteNombre   String        @map("solicitante_nombre") @db.VarChar(50)
   solicitanteApellido String        @map("solicitante_apellido") @db.VarChar(50)
   solicitanteCorreo   String        @map("solicitante_correo") @db.VarChar(100)
-  solicitanteRut      String        @map("solicitante_rut") @db.VarChar(10)
+  solicitanteRut      String        @map("solicitante_rut") @db.VarChar(20)
   refAyudante         String?       @map("ref_ayudante") // No tiene NN
   motivoReserva       String        @map("motivo_reserva") @db.VarChar(255)
   creadoEn            DateTime?     @default(now()) @map("creado_en")
