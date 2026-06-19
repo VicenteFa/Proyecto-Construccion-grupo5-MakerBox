@@ -6,58 +6,73 @@ import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 const errorRate = new Rate('errors');
 
-// Configuración de la Prueba de Picos
 export const options = {
   stages: [
-    { duration: '5s', target: 50 }, // Salto violento de 0 a 50 usuarios en 5s
-    { duration: '15s', target: 50 }, // Mantener el bombardeo por 15s
-    { duration: '5s', target: 0 }, // Caída rápida a la normalidad en 5s
+    { duration: '5s', target: 50 },
+    { duration: '15s', target: 50 },
+    { duration: '5s', target: 0 },
   ],
   thresholds: {
-    http_req_duration: ['p(90)<3000'], // Tolerar hasta 3s durante el caos del pico
-    errors: ['rate<0.05'], // Max 5% de error
+    http_req_duration: ['p(90)<3000'],
+    errors: ['rate<0.05'],
   },
 };
 
 const BASE_URL = 'http://localhost:3000/api';
 
-export default function () {
+// AUTO-LOGIN, Si no viene un token por variable, lo busca el mismo.
+export function setup() {
+  const loginRes = http.post(
+    `${BASE_URL}/auth/login`,
+    JSON.stringify({
+      correo: 'testqa@utalca.cl',
+      passUsuario: 'testqa123',
+    }),
+    { headers: { 'Content-Type': 'application/json' } },
+  );
+
+  if (loginRes.status !== 201) {
+    throw new Error('Fallo al loguearse en setup(): ' + loginRes.body);
+  }
+
+  return { token: loginRes.json('token') };
+}
+
+// EL TEST: Recibe el token del setup
+export default function (data) {
   const randomId = Math.floor(Math.random() * 1000000);
 
-  const data = {
+  // FormData para enviar archivos correctamente a NestJS
+  const fd = {
     colorOpcion1: 'Rojo',
     colorOpcion2: 'Azul',
     colorOpcion3: 'Negro',
-    comentario: `Solicitud de impresion masiva generada por k6 - ID ${randomId}`,
-
-    // Primer archivo requerido
-    modelo3d: http.file('simulacion de contenido 3D', 'prueba3d.obj', 'application/octet-stream'),
-
-    // Segundo archivo requerido
-    modeloStl: http.file('simulacion de contenido STL', 'prueba.stl', 'application/sla'),
+    comentario: `Prueba K6 - ${randomId}`,
+    modelo3d: http.file('contenido 3D', 'prueba3d.obj', 'application/octet-stream'),
+    modeloStl: http.file('contenido STL', 'prueba.stl', 'application/sla'),
   };
 
   const params = {
     headers: {
-      Authorization: `Bearer ${__ENV.K6_TOKEN}`,
+      Authorization: `Bearer ${data.token}`,
+      // k6 detecta automatic que es multipart al pasar un objeto
     },
   };
 
-  // Lanzar el POST a impresiones
-  const resImpresion = http.post(`${BASE_URL}/impresiones`, data, params);
+  const resImpresion = http.post(`${BASE_URL}/impresiones`, fd, params);
 
-  // Validar que se creo correctamente
   const checkImpresion = check(resImpresion, {
-    'Impresión solicitada (Status 201)': (r) => r.status === 201,
+    'Status 201': (r) => r.status === 201,
   });
 
-  errorRate.add(!checkImpresion);
+  if (!checkImpresion) {
+    console.log(`Error: ${resImpresion.status} - ${resImpresion.body}`);
+  }
 
-  // Poco tiempo de espera para saturar el servidor
+  errorRate.add(!checkImpresion);
   sleep(0.5);
 }
 
-// Generar el reporte HTML automaticamente
 export function handleSummary(data) {
   return {
     'load-tests/reporte-spike.html': htmlReport(data),
