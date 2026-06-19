@@ -7,9 +7,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import * as jwt from 'jsonwebtoken';
-import { TipoRol } from '@prisma/client';
 import { ROLES_KEY } from './roles.decorator';
-import { Request } from 'express';
+import { TipoRol } from '@prisma/client';
 
 export interface TokenPayload {
   id: string;
@@ -17,7 +16,8 @@ export interface TokenPayload {
   rol: TipoRol;
 }
 
-export interface RequestConUsuario extends Request {
+export interface RequestConUsuario {
+  headers: Record<string, string | undefined>;
   user?: TokenPayload;
 }
 
@@ -29,7 +29,9 @@ export class AuthRolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<RequestConUsuario>();
     const token = this.extractTokenFromHeader(request);
 
-    if (!token) throw new UnauthorizedException('Token no proporcionado');
+    if (!token) {
+      throw new UnauthorizedException('No se encontró el token de acceso');
+    }
 
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET ?? 'secret') as TokenPayload;
@@ -41,21 +43,29 @@ export class AuthRolesGuard implements CanActivate {
         context.getClass(),
       ]);
 
-      if (!requiredRoles) return true;
+      if (!requiredRoles || requiredRoles.length === 0) {
+        return true;
+      }
 
       const hasRole = requiredRoles.some((rol) => payload.rol === rol);
-      if (!hasRole) throw new ForbiddenException('No tienes permisos suficientes');
+      if (!hasRole) {
+        throw new ForbiddenException('No tienes permisos suficientes');
+      }
 
       return true;
     } catch (error) {
-      if (error instanceof ForbiddenException) throw error;
-      throw new UnauthorizedException('Token inválido o expirado');
+      if (error instanceof ForbiddenException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Token invalido o expirado');
     }
   }
 
-  // Agregamos el tipado Request aquí también para evitar errores de implicit any
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+  private extractTokenFromHeader(request: RequestConUsuario): string | undefined {
+    const [type, token] = (request.headers.authorization ?? '').split(' ');
+
+    console.log(`El token es tipo Bearer ?:${type === 'Bearer' ? token : undefined}`);
+
     return type === 'Bearer' ? token : undefined;
   }
 }
