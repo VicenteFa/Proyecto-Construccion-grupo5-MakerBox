@@ -20,7 +20,7 @@ export const options = {
 
 const BASE_URL = 'http://localhost:3000/api';
 
-// AUTO-LOGIN, Si no viene un token por variable, lo busca el mismo.
+// AUTO-LOGIN: Si no viene un token por variable, lo busca Ã©l mismo.
 export function setup() {
   const loginRes = http.post(
     `${BASE_URL}/auth/login`,
@@ -31,7 +31,7 @@ export function setup() {
     { headers: { 'Content-Type': 'application/json' } },
   );
 
-  if (loginRes.status !== 201) {
+  if (loginRes.status !== 201 && loginRes.status !== 200) {
     throw new Error('Fallo al loguearse en setup(): ' + loginRes.body);
   }
 
@@ -42,12 +42,20 @@ export function setup() {
 export default function (data) {
   const randomId = Math.floor(Math.random() * 1000000);
 
-  // FormData para enviar archivos correctamente a NestJS
+  // FormData para enviar archivos y cumplir con el DTO
   const fd = {
+    solicitanteNombre: 'Test',
+    solicitanteApellido: 'QA',
+    solicitanteCorreo: 'testqa@utalca.cl',
+    solicitanteRut: '99999999-9',
+    tipoUsuario: 'ESTUDIANTE',
+    tipoSolicitud: 'Prueba de Carga',
+
     colorOpcion1: 'Rojo',
     colorOpcion2: 'Azul',
     colorOpcion3: 'Negro',
     comentario: `Prueba K6 - ${randomId}`,
+
     modelo3d: http.file('contenido 3D', 'prueba3d.obj', 'application/octet-stream'),
     modeloStl: http.file('contenido STL', 'prueba.stl', 'application/sla'),
   };
@@ -55,7 +63,6 @@ export default function (data) {
   const params = {
     headers: {
       Authorization: `Bearer ${data.token}`,
-      // k6 detecta automatic que es multipart al pasar un objeto
     },
   };
 
