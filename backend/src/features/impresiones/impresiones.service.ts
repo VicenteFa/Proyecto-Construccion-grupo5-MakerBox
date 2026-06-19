@@ -22,7 +22,7 @@ export class ImpresionesService {
         tipoUsuario: dto.tipoUsuario,
         tipoSolicitud: dto.tipoSolicitud,
         nombreCurso: dto.nombreCurso,
-        refCurso: dto.refCurso,
+        refCurso: dto.refCurso ?? 'Sin referencia',
 
         colorOpcion1: dto.colorOpcion1,
         colorOpcion2: dto.colorOpcion2,
