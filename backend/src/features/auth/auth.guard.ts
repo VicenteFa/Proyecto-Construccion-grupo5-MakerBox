@@ -63,6 +63,9 @@ export class AuthRolesGuard implements CanActivate {
 
   private extractTokenFromHeader(request: RequestConUsuario): string | undefined {
     const [type, token] = (request.headers.authorization ?? '').split(' ');
+
+    console.log(`El token es tipo Bearer ?:${type === 'Bearer' ? token : undefined}`);
+
     return type === 'Bearer' ? token : undefined;
   }
 }
