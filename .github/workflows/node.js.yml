@@ -123,7 +123,7 @@ jobs:
           DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb"
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
-          npm run build
+          npm run build:nest
           npm run start &
           echo "Esperando al backend..."
           for i in {1..15}; do
