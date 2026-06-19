@@ -109,27 +109,22 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Instalar dependencias
+        env:
+          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb" # ← agregado
         run: npm ci
 
-      - name: Generar cliente Prisma y migrar DB de test
+      - name: Migrar DB de test
         env:
           DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb"
-        run: |
-          npx prisma generate
-          npx prisma db push --accept-data-loss
+        run: npx prisma db push --accept-data-loss
 
       - name: Compilar, Iniciar backend y preparar datos
         env:
           DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb"
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
-          # Compilar para producción (Vital para pruebas de carga reales)
           npm run build
-
-          # Iniciar en segundo plano
           npm run start &
-
-          # Esperar inteligentemente a que el servidor responda max 30 seg
           echo "Esperando al backend..."
           for i in {1..15}; do
             if curl -s http://localhost:3000/api > /dev/null; then
@@ -138,13 +133,9 @@ jobs:
             fi
             sleep 2
           done
-
-          # Crear el usuario ahora que sabemos que el server esta arriba
           curl -X POST http://localhost:3000/api/auth/register \
             -H "Content-Type: application/json" \
             -d '{"rut":"99999999-9","nombre":"Test","apellido":"QA","correo":"testqa@utalca.cl","passUsuario":"testqa123"}'
-
-          # 5. Iniciar sesion y guardar el token JWT para que k6 lo use dinamicamente
           TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
             -H "Content-Type: application/json" \
             -d '{"correo":"testqa@utalca.cl","passUsuario":"testqa123"}' | grep -o '"token":"[^"]*' | cut -d'"' -f4)
