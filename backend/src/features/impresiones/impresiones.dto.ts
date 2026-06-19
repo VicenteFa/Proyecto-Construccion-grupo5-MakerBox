@@ -1,6 +1,32 @@
-import { IsString } from 'class-validator';
+import { IsString, IsOptional, IsEmail } from 'class-validator';
 
 export class CrearImpresionDto {
+  @IsString()
+  solicitanteNombre!: string;
+
+  @IsString()
+  solicitanteApellido!: string;
+
+  @IsEmail()
+  solicitanteCorreo!: string;
+
+  @IsString()
+  solicitanteRut!: string;
+
+  @IsString()
+  tipoUsuario!: string;
+
+  @IsString()
+  tipoSolicitud!: string;
+
+  @IsOptional()
+  @IsString()
+  nombreCurso?: string;
+
+  @IsOptional()
+  @IsString()
+  refCurso?: string;
+
   @IsString()
   colorOpcion1!: string;
 
@@ -11,5 +37,5 @@ export class CrearImpresionDto {
   colorOpcion3!: string;
 
   @IsString()
-  comentario!: string;
+  comentario?: string;
 }

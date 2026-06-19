@@ -15,10 +15,20 @@ export class ImpresionesService {
   ): Promise<Impresion> {
     return await this.prisma.impresion.create({
       data: {
+        solicitanteNombre: dto.solicitanteNombre,
+        solicitanteApellido: dto.solicitanteApellido,
+        solicitanteCorreo: dto.solicitanteCorreo,
+        solicitanteRut: dto.solicitanteRut,
+        tipoUsuario: dto.tipoUsuario,
+        tipoSolicitud: dto.tipoSolicitud,
+        nombreCurso: dto.nombreCurso,
+        refCurso: dto.refCurso,
+
         colorOpcion1: dto.colorOpcion1,
         colorOpcion2: dto.colorOpcion2,
         colorOpcion3: dto.colorOpcion3,
-        comentario: dto.comentario,
+        comentario: dto.comentario ?? 'Sin comentarios',
+
         urlModelo3d,
         urlModeloStl,
         refEstudiante,
@@ -31,6 +41,7 @@ export class ImpresionesService {
    * Cambia el estado de una impresion especifica
    * @param idImpresion ID (UUID) de la impresion
    * @param estado Nuevo estado a asignar
+   * @param observacionAyudante Comentario opcional sobre el cambio
    * @returns La impresion actualizada
    */
   async cambiarEstado(
@@ -58,10 +69,11 @@ export class ImpresionesService {
 
     return impresiones;
   }
+
   async actualizarEstado(id: string, nuevoEstado: EstadoImpresion, nuevaObservacion: string) {
     return this.prisma.impresion.update({
       where: {
-        idImpresion: id, // Busca el registro por su llave primaria real
+        idImpresion: id,
       },
       data: {
         estado: nuevoEstado,

@@ -72,7 +72,6 @@ export const ReservasPage: React.FC = () => {
 
         // Llamamos al archivo de servicio externo
         const datos = await obtenerTodasLasImpresiones();
-
         // Guardamos los datos reales en el estado
         setSolicitudes(datos);
       } catch (error) {

@@ -12,6 +12,7 @@
     "test:cov": "vitest run --coverage"
   },
   "dependencies": {
+    "@types/nodemailer": "^8.0.1",
     "antd": "^6.3.7",
     "axios": "^1.17.0",
     "jwt-decode": "^4.0.0",
