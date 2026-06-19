@@ -260,13 +260,13 @@ describe('CursosService', () => {
 
       expect(updateCursoSpy).toHaveBeenCalledTimes(2);
       expect(resultado).toEqual({
-        mensaje: 'Se inscribieron 2 estudiantes en el curso.',
+        mensaje: 'Éxito. Se inscribieron 2 estudiantes en el curso.',
       });
     });
 
     it('debe rechazar la promesa si ocurre un error al consultar/actualizar la base de datos', async () => {
       const csv = [
-        'Nombre de usuario, Direccion de correo electrónico,Nombre,Apellido',
+        'Nombre de usuario,Dirección de correo electrónico,Nombre,Apellido',
         '33333333-3,error@test.com,Error,Test',
       ].join('\n');
 
