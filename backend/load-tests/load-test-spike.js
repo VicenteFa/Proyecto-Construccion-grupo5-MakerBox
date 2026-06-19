@@ -1,4 +1,3 @@
-/* eslint-disable */
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Rate } from 'k6/metrics';
@@ -40,8 +39,7 @@ export default function () {
 
   const params = {
     headers: {
-      Authorization:
-        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEyNmJmMWMyLTQ2NzUtNDc4OS1iYjQwLTc4NThjZjRmOWQzMyIsImNvcnJlbyI6InRlc3RxYUB1dGFsY2EuY2wiLCJyb2wiOiJFU1RVRElBTlRFIiwiaWF0IjoxNzgxNzkyMzA2LCJleHAiOjE3ODE4MjExMDZ9.uMIGXudFJivHa-h60w4mC9bD9iD0VXyI7X42RyDmmic',
+      Authorization: `Bearer ${__ENV.K6_TOKEN}`,
     },
   };
 
@@ -62,7 +60,7 @@ export default function () {
 // Generar el reporte HTML automaticamente
 export function handleSummary(data) {
   return {
-    'test/reporte-spike.html': htmlReport(data),
+    'load-tests/reporte-spike.html': htmlReport(data),
     stdout: textSummary(data, { indent: ' ', enableColors: true }),
   };
 }

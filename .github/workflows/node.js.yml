@@ -73,3 +73,102 @@ jobs:
         with:
           name: coverage-report-frontend
           path: frontend/coverage/
+
+  load-tests:
+    name: K6 Load Tests
+    runs-on: ubuntu-latest
+    needs: [build-backend]
+    defaults:
+      run:
+        working-directory: ./backend
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar cliente Prisma y migrar DB de test
+        env:
+          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb"
+        run: |
+          npx prisma generate
+          npx prisma db push --accept-data-loss
+
+      - name: Compilar, Iniciar backend y preparar datos
+        env:
+          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb"
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: |
+          # Compilar para producción (Vital para pruebas de carga reales)
+          npm run build
+
+          # Iniciar en segundo plano
+          npm run start &
+
+          # Esperar inteligentemente a que el servidor responda max 30 seg
+          echo "Esperando al backend..."
+          for i in {1..15}; do
+            if curl -s http://localhost:3000/api > /dev/null; then
+              echo "Backend listo!"
+              break
+            fi
+            sleep 2
+          done
+
+          # Crear el usuario ahora que sabemos que el server esta arriba
+          curl -X POST http://localhost:3000/api/auth/register \
+            -H "Content-Type: application/json" \
+            -d '{"rut":"99999999-9","nombre":"Test","apellido":"QA","correo":"testqa@utalca.cl","passUsuario":"testqa123"}'
+
+          # 5. Iniciar sesion y guardar el token JWT para que k6 lo use dinamicamente
+          TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"correo":"testqa@utalca.cl","passUsuario":"testqa123"}' | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+          echo "K6_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+      - name: Instalar k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Ejecutar prueba de carga (load test)
+        run: k6 run load-tests/load-test.js
+
+      - name: Ejecutar prueba de picos (spike test)
+        run: k6 run -e K6_TOKEN=$K6_TOKEN load-tests/load-test-spike.js
+
+      - name: Subir reportes de k6
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-reports
+          path: |
+            backend/load-tests/reporte.html
+            backend/load-tests/reporte-spike.html
