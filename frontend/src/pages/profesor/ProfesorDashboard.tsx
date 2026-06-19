@@ -17,12 +17,20 @@ export const ProfesorDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Evitar peticiones si no hay token
+    if (!token) return;
+
     axios
       .get('http://localhost:3000/api/cursos/mis-cursos', {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setCursos(res.data))
-      .catch(() => message.error('Error al cargar los cursos'))
+      .catch((error) => {
+        // Solo mostramos el error si NO es un error de autorizacion
+        if (error.response?.status !== 401) {
+          message.error('Error al cargar los cursos');
+        }
+      })
       .finally(() => setLoading(false));
   }, [token]);
 

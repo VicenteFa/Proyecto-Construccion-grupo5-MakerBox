@@ -31,7 +31,7 @@ export const SignUpPage = () => {
     const ok = await register(data);
     if (ok) {
       message.success('¡Cuenta creada exitosamente!');
-      setTimeout(() => navigate(ROUTES.LOGIN.path), 500); // espera 0.5s antes de redirigir
+      setTimeout(() => navigate(ROUTES.LOGIN.path), 200); // espera 0.2s antes de redirigir
     }
   };
 

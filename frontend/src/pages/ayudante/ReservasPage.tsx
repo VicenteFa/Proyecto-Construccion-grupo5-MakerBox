@@ -45,7 +45,7 @@ export const ReservasPage: React.FC = () => {
       });
       await actualizarEstadoImpresionDB(idImpresion, nuevoEstado, nuevaObservacion);
 
-      // 2. Actualizamos el estado local de React para que la tarjeta cambie de color inmediatamente
+      // Actualizamos el estado local de React para que la tarjeta cambie de color inmediatamente
       // sin tener que recargar la página.
       setSolicitudes((solicitudesAnteriores) =>
         solicitudesAnteriores.map((solicitud) =>
@@ -55,7 +55,7 @@ export const ReservasPage: React.FC = () => {
         ),
       );
 
-      // Opcional: Mostrar una alerta de éxito
+      // Mostrar una alerta de exito
       console.log('¡Solicitud actualizada con éxito!');
     } catch (error) {
       console.error('Error al actualizar la solicitud:', error);

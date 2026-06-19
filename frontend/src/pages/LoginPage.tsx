@@ -100,7 +100,6 @@ export const LoginPage = () => {
           </Button>
         </Form.Item>
 
-        {/* Enlace para ir al Registro */}
         <div style={{ textAlign: 'center', marginTop: 8 }}>
           ¿No tienes cuenta?{' '}
           <Link to={ROUTES.SIGN_UP.path} style={{ color: '#1677ff' }}>

@@ -15,6 +15,7 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { CrearCurso } from '../pages/curso/CrearCurso';
 import { CursoDetallePage } from '../pages/curso/CursoDetalle';
 import { ProfesorDashboard } from '../pages/profesor/ProfesorDashboard';
+import { EstudianteDashboard } from '../pages/estudiante/EstudianteDashboard';
 
 export const router = createBrowserRouter([
   {
@@ -32,7 +33,16 @@ export const router = createBrowserRouter([
 
       {
         element: <ProtectedRoute allowedRoles={['ESTUDIANTE']} />,
-        children: [{ path: ROUTES.ESTUDIANTE.path, element: <MisImpresionesPage /> }],
+        children: [
+          // dashboard principal
+          { path: ROUTES.ESTUDIANTE.path, element: <EstudianteDashboard /> },
+
+          // solo para imprimir
+          { path: '/estudiante/nueva-impresion', element: <MisImpresionesPage /> },
+
+          //{ path: '/estudiante/mis-cursos', element: <MisCursosPage /> },  #PARA EL FUTURO
+          //{ path: '/estudiante/mis-ayudantias', element: <MisAyudantiasPage /> }, #PARA EL FUTURO
+        ],
       },
       {
         element: <ProtectedRoute allowedRoles={['PROFESOR']} />,

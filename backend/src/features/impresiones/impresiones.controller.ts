@@ -30,7 +30,7 @@ export class ImpresionesController {
     return this.impresionesService.obtenerTodas();
   }
 
-  // 2. ACTUALIZAMOS UNA IMPRESIÓN (Separado y limpio)
+  // ACTUALIZAMOS UNA IMPRESION
   @Patch(':id')
   async actualizarImpresion(
     @Param('id') id: string,
@@ -39,7 +39,7 @@ export class ImpresionesController {
     return this.impresionesService.cambiarEstado(id, datos.estado);
   }
 
-  // 3. CREAMOS UNA IMPRESIÓN (El @Post y los Interceptors van juntos pegados a la función)
+  // CREAMOS UNA IMPRESION
   @Post()
   @UseInterceptors(
     // Interceptor para manejar la subida  de archivos, con configuracion para almacenar los archivos en el servidor y validar las extensiones y tamanos permitidos
