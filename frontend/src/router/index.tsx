@@ -14,10 +14,10 @@ import { TestUsuarioPage } from '../pages/TestUsuarioPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { CrearCurso } from '../pages/curso/CrearCurso';
 import { CursoDetallePage } from '../pages/curso/CursoDetalle';
-import { ProfesorDashboard } from '../pages/profesor/ProfesorDashboard';
 import { EstudianteDashboard } from '../pages/estudiante/EstudianteDashboard';
 import { AdminEstudiantesPage } from '../pages/admin/AdminEstudiantesPage';
 import { AdminInventarioPage } from '../pages/admin/AdminInventarioPage';
+import { MisCursosPage } from '../pages/profesor/MisCursosPage';
 
 export const router = createBrowserRouter([
   {
@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
       {
         element: <ProtectedRoute allowedRoles={['PROFESOR']} />,
         children: [
-          { path: ROUTES.PROFESOR.path, element: <ProfesorDashboard /> },
+          { path: ROUTES.PROFESOR.path, element: <MisCursosPage /> },
           { path: '/profesor/nuevo-curso', element: <CrearCurso /> },
           { path: '/profesor/cursos/:idCurso', element: <CursoDetallePage /> },
         ],

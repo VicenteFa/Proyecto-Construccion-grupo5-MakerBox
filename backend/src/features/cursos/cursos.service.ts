@@ -118,4 +118,12 @@ export class CursosService {
         });
     });
   }
+
+  async eliminarCurso(idCurso: string) {
+    // Nota: Si tienes cascada configurada en la BD se borrará todo automáticamente.
+    // Si no, Prisma arrojará un error si el curso tiene estudiantes inscritos o ayudantías.
+    return this.prisma.curso.delete({
+      where: { idCurso },
+    });
+  }
 }

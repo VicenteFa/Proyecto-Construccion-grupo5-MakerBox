@@ -8,6 +8,7 @@ import {
   UploadedFile,
   UseInterceptors,
   Get,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CursosService } from './cursos.service';
@@ -35,6 +36,10 @@ export class CursosController {
   @Roles(TipoRol.PROFESOR)
   @Get('mis-cursos')
   obtenerMisCursos(@Req() req: RequestConUsuario) {
+    const idProfesor = req.user!.id;
+    // Imprimimos el ID que extrajo el Token
+    console.log('ID del profesor haciendo la petición:', idProfesor);
+
     return this.cursosService.obtenerCursosProfesor(req.user!.id);
   }
 
@@ -47,5 +52,12 @@ export class CursosController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.cursosService.cargarEstudiantesCsv(idCurso, file);
+  }
+
+  @UseGuards(AuthRolesGuard)
+  @Roles(TipoRol.PROFESOR)
+  @Delete(':idCurso')
+  async eliminarCurso(@Param('idCurso') idCurso: string) {
+    return this.cursosService.eliminarCurso(idCurso);
   }
 }
