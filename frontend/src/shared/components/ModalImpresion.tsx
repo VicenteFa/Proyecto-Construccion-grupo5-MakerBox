@@ -47,7 +47,13 @@ export const ModalDetalles: React.FC<ModalDetallesProps> = ({
               <strong>Solicitante:</strong> {data.solicitanteNombre} {data.solicitanteApellido}
             </p>
             <p>
-              <strong>Curso:</strong> {data.nombreCurso}
+              <strong>Correo:</strong> {data.solicitanteCorreo}
+            </p>
+            <p>
+              <strong>Rut:</strong> {data.solicitanteRut}
+            </p>
+            <p>
+              <strong>Comentario:</strong> {data.comentario}
             </p>
             <p>
               <strong>Archivos:</strong>{' '}

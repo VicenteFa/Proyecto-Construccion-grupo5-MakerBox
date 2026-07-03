@@ -54,9 +54,18 @@ export class ImpresionesService {
       orderBy: {
         creadoEn: 'desc',
       },
+      include: {
+        estudiante: true, // Incluye la relación con el modelo Usuario
+      },
     });
 
-    return impresiones;
+    return impresiones.map((Impresion) => ({
+      ...Impresion,
+      solicitanteNombre: Impresion.estudiante?.nombre || '',
+      solicitanteApellido: Impresion.estudiante?.apellido || '',
+      solicitanteCorreo: Impresion.estudiante?.correo || '',
+      solicitanteRut: Impresion.estudiante?.rut || '',
+    }));
   }
   async actualizarEstado(id: string, nuevoEstado: EstadoImpresion, nuevaObservacion: string) {
     return this.prisma.impresion.update({
