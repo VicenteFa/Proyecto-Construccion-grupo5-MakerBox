@@ -7,7 +7,12 @@ interface ModalDetallesProps {
   onClose: () => void;
   data: IImpresion | null;
   // Nueva función que recibe el ID, el nuevo estado y el nuevo comentario
-  onActualizar: (idImpresion: string, estado: EstadoSolicitud, observacion: string) => void;
+  onActualizar: (
+    idImpresion: string,
+    estado: EstadoSolicitud,
+    observacion: string,
+    tiempoEstimadoImpresion: string,
+  ) => void;
 }
 
 export const ModalDetalles: React.FC<ModalDetallesProps> = ({
@@ -21,12 +26,14 @@ export const ModalDetalles: React.FC<ModalDetallesProps> = ({
   const [observacionEditada, setObservacionEditada] = useState<string>(
     data?.observacionAyudante || '',
   );
+
+  const [tiempoEditado, setTiempoEditado] = useState<string>(data?.tiempoEstimadoImpresion || '');
   console.log('Datos de la solicitud:', data);
 
   if (!isOpen || !data) return null;
 
   const manejarGuardar = () => {
-    onActualizar(data.idImpresion, estadoEditado, observacionEditada);
+    onActualizar(data.idImpresion, estadoEditado, observacionEditada, tiempoEditado);
     onClose(); // Cerramos el modal después de guardar
   };
 
@@ -87,6 +94,20 @@ export const ModalDetalles: React.FC<ModalDetallesProps> = ({
                 <option value="FINALIZADA">Finalizada</option>
                 <option value="RECHAZADA">Rechazada</option>
               </select>
+            </div>
+
+            <div>
+              <label htmlFor="tiempo-input" className="modal-label">
+                Tiempo Estimado:
+              </label>
+              <input
+                id="tiempo-input"
+                type="text"
+                value={tiempoEditado}
+                onChange={(e) => setTiempoEditado(e.target.value)}
+                placeholder="Ej: 2h 30m, 150 min, etc."
+                className="modal-input"
+              />
             </div>
 
             {/* Comentario del Ayudante */}

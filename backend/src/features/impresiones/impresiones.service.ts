@@ -37,6 +37,7 @@ export class ImpresionesService {
     idImpresion: string,
     estado: EstadoImpresion,
     observacionAyudante?: string,
+    tiempoEstimadoImpresion?: string,
   ): Promise<Impresion> {
     return await this.prisma.impresion.update({
       where: {
@@ -45,6 +46,7 @@ export class ImpresionesService {
       data: {
         estado: estado,
         observacionAyudante: observacionAyudante,
+        tiempoEstimadoImpresion: tiempoEstimadoImpresion,
       },
     });
   }
