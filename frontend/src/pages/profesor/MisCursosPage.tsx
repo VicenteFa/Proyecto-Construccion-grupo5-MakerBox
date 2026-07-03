@@ -33,14 +33,12 @@ export const MisCursosPage = () => {
       .finally(() => setLoading(false));
   }, [token]);
 
-  // Función para eliminar el curso de la API y actualizar la UI visualmente
   const handleEliminarCurso = async (idCurso: string) => {
     try {
       await axios.delete(`http://localhost:3000/api/cursos/${idCurso}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Actualización visual: Filtramos el curso eliminado del estado
       setCursos((cursosActuales) => cursosActuales.filter((c) => c.idCurso !== idCurso));
       message.success('Curso eliminado correctamente.');
     } catch (error) {
