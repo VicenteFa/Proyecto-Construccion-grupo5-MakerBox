@@ -11,6 +11,7 @@ const mockSolicitud = {
   solicitanteApellido: 'Pérez',
   estado: 'PENDIENTE',
   observacionAyudante: '',
+  tiempoEstimadoImpresion: '2 horas',
   nombreCurso: 'Diseño Industrial',
   urlModelo3d: '#',
   urlModeloStl: '#',
@@ -38,6 +39,9 @@ describe('Componente ModalDetalles', () => {
     const textareaObs = screen.getByLabelText(/Observación \/ Motivo:/i);
     fireEvent.change(textareaObs, { target: { value: 'Malla corregida y en proceso' } });
 
+    const inputTiempo = screen.getByLabelText(/Tiempo Estimado de Impresión:/i);
+    fireEvent.change(inputTiempo, { target: { value: '3 horas' } });
+
     const botonGuardar = screen.getByText(/Guardar Cambios/i);
     fireEvent.click(botonGuardar);
 
@@ -45,6 +49,7 @@ describe('Componente ModalDetalles', () => {
       'req-001',
       'IMPRIMIENDO',
       'Malla corregida y en proceso',
+      '3 horas',
     );
 
     expect(mockOnClose).toHaveBeenCalled();
