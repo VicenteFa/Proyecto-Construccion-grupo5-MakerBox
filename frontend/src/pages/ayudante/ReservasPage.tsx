@@ -11,7 +11,7 @@ const ModalDetallesAny = ModalDetalles as React.FC<{
   isOpen: boolean;
   onClose: () => void;
   data: IImpresion | null;
-  onActualizar: (id: string, estado: EstadoSolicitud, observacion: string) => void;
+  onActualizar: (id: string, estado: EstadoSolicitud, observacion: string, tiempo: string) => void;
 }>;
 
 export const ReservasPage: React.FC = () => {
@@ -36,21 +36,29 @@ export const ReservasPage: React.FC = () => {
     idImpresion: string,
     nuevoEstado: EstadoSolicitud,
     nuevaObservacion: string,
+    nuevoTiempo: string,
   ) => {
     try {
       await fetch(`http://localhost:3000/api/impresiones/${idImpresion}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ estado: nuevoEstado, observacionAyudante: nuevaObservacion }),
+        body: JSON.stringify({
+          estado: nuevoEstado,
+          observacionAyudante: nuevaObservacion,
+          tiempoEstimadoImpresion: nuevoTiempo,
+        }),
       });
       await actualizarEstadoImpresionDB(idImpresion, nuevoEstado, nuevaObservacion);
 
-      // Actualizamos el estado local de React para que la tarjeta cambie de color inmediatamente
-      // sin tener que recargar la página.
       setSolicitudes((solicitudesAnteriores) =>
         solicitudesAnteriores.map((solicitud) =>
           solicitud.idImpresion === idImpresion
-            ? { ...solicitud, estado: nuevoEstado, observacionAyudante: nuevaObservacion }
+            ? {
+                ...solicitud,
+                estado: nuevoEstado,
+                observacionAyudante: nuevaObservacion,
+                tiempoEstimadoImpresion: nuevoTiempo,
+              }
             : solicitud,
         ),
       );
@@ -98,13 +106,14 @@ export const ReservasPage: React.FC = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>Gestor de Impresiones 3D</h1>
+      <h1 style={{ marginBottom: '40px' }}>Gestor de Impresiones 3D</h1>
 
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '20px',
+          gridTemplateColumns: 'repeat(3, minmax(300px, 1fr))',
+          gap: '40px',
+          alignItems: 'start',
         }}
       >
         {solicitudes.length > 0 ? (

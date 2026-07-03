@@ -37,6 +37,7 @@ export class ImpresionesService {
     idImpresion: string,
     estado: EstadoImpresion,
     observacionAyudante?: string,
+    tiempoEstimadoImpresion?: string,
   ): Promise<Impresion> {
     return await this.prisma.impresion.update({
       where: {
@@ -45,6 +46,7 @@ export class ImpresionesService {
       data: {
         estado: estado,
         observacionAyudante: observacionAyudante,
+        tiempoEstimadoImpresion: tiempoEstimadoImpresion,
       },
     });
   }
@@ -54,9 +56,18 @@ export class ImpresionesService {
       orderBy: {
         creadoEn: 'desc',
       },
+      include: {
+        estudiante: true, // Incluye la relación con el modelo Usuario
+      },
     });
 
-    return impresiones;
+    return impresiones.map((Impresion) => ({
+      ...Impresion,
+      solicitanteNombre: Impresion.estudiante?.nombre || '',
+      solicitanteApellido: Impresion.estudiante?.apellido || '',
+      solicitanteCorreo: Impresion.estudiante?.correo || '',
+      solicitanteRut: Impresion.estudiante?.rut || '',
+    }));
   }
   async actualizarEstado(id: string, nuevoEstado: EstadoImpresion, nuevaObservacion: string) {
     return this.prisma.impresion.update({

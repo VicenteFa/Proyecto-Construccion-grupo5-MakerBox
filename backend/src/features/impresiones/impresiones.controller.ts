@@ -34,9 +34,19 @@ export class ImpresionesController {
   @Patch(':id')
   async actualizarImpresion(
     @Param('id') id: string,
-    @Body() datos: { estado: EstadoImpresion; observacionAyudante: string },
+    @Body()
+    datos: {
+      estado: EstadoImpresion;
+      observacionAyudante: string;
+      tiempoEstimadoImpresion: string;
+    },
   ) {
-    return this.impresionesService.cambiarEstado(id, datos.estado);
+    return this.impresionesService.cambiarEstado(
+      id,
+      datos.estado,
+      datos.observacionAyudante,
+      datos.tiempoEstimadoImpresion,
+    );
   }
 
   // CREAMOS UNA IMPRESION

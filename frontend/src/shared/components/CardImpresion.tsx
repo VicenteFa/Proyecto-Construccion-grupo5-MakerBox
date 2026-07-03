@@ -41,42 +41,20 @@ export const SolicitudCard: React.FC<SolicitudCardProps> = ({ data, onAbrirModal
           <strong>Tipo usuario:</strong> {data.tipoUsuario}
         </p>
         <p className="solicitud-texto">
-          <strong>Curso:</strong> {data.nombreCurso}
+          <strong>Correo:</strong> {data.solicitanteCorreo}
         </p>
         <p className="solicitud-texto">
-          <strong>Tipo:</strong> {data.tipoSolicitud}
+          <strong>Rut:</strong> {data.solicitanteRut}
+        </p>
+        <p className="solicitud-texto">
+          <strong>Apellido:</strong> {data.solicitanteApellido}
+        </p>
+        <p className="solicitud-texto">
+          <strong>Curso:</strong> {data.nombreCurso}
         </p>
         <p className="solicitud-texto">
           <strong>Fecha solicitud:</strong> {fechaFormateada}
         </p>
-
-        {data.urlModelo3d && (
-          <p className="solicitud-texto">
-            <strong>URL modelo 3D:</strong>{' '}
-            <a
-              href={data.urlModelo3d}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="solicitud-enlace"
-            >
-              {data.urlModelo3d}
-            </a>
-          </p>
-        )}
-
-        {data.urlModeloStl && (
-          <p className="solicitud-texto">
-            <strong>URL STL:</strong>{' '}
-            <a
-              href={data.urlModeloStl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="solicitud-enlace"
-            >
-              {data.urlModeloStl}
-            </a>
-          </p>
-        )}
 
         {data.tiempoEstimadoImpresion && (
           <p className="solicitud-texto">

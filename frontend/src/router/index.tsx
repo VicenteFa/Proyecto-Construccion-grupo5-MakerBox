@@ -15,6 +15,8 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { CrearCurso } from '../pages/curso/CrearCurso';
 import { CursoDetallePage } from '../pages/curso/CursoDetalle';
 import { EstudianteDashboard } from '../pages/estudiante/EstudianteDashboard';
+import { AdminEstudiantesPage } from '../pages/admin/AdminEstudiantesPage';
+import { AdminInventarioPage } from '../pages/admin/AdminInventarioPage';
 import { MisCursosPage } from '../pages/profesor/MisCursosPage';
 
 export const router = createBrowserRouter([
@@ -30,6 +32,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.INVENTARIO.path, element: <InventarioPage /> },
       { path: ROUTES.RESERVAS.path, element: <ReservasPage /> },
       { path: ROUTES.SOLICITUD.path, element: <SolicitudPage /> },
+      { path: ROUTES.ADMIN_ESTUDIANTES.path, element: <AdminEstudiantesPage /> },
+      { path: ROUTES.ADMIN_INVENTARIO.path, element: <AdminInventarioPage /> },
 
       {
         element: <ProtectedRoute allowedRoles={['ESTUDIANTE']} />,
