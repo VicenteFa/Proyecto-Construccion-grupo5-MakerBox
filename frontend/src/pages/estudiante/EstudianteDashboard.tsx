@@ -20,6 +20,18 @@ export const EstudianteDashboard = () => {
         >
           Solicitar Nueva Impresión
         </Link>
+        <Link
+          to="/estudiante/mis-impresiones"
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#28a745',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '5px',
+          }}
+        >
+          Ver Mis Impresiones
+        </Link>
         {/*ESPACIO RESERVADO PARA PODER AGREGAR MAS BOTONES O ALGUNOS ELEMENTOS VISUALES}
         <Link
           to="/estudiante/mis-cursos"

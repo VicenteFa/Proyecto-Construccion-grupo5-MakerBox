@@ -1,21 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { impresionesService } from '../services/impresiones.service';
 import { message } from 'antd';
 
-// Hook personalizado para manejar la logica de las impresiones 3D
+interface Impresion {
+  idImpresion: string;
+  estado: 'PENDIENTE' | 'IMPRIMIENDO' | 'FINALIZADA' | 'RECHAZADA';
+  colorOpcion1: string;
+  colorOpcion2: string;
+  colorOpcion3: string;
+  comentario: string;
+  creadoEn: string;
+  observacionAyudante?: string;
+  motivoRechazo?: string;
+}
+
 export const useImpresiones = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [impresiones, setImpresiones] = useState<Impresion[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Funcion para enviar la solicitud de impresion 3D al backend
+  const obtenerMisImpresiones = async () => {
+    setIsLoading(true);
+    try {
+      const data = await impresionesService.obtenerMisImpresiones();
+
+      // Detectar estados nuevos comparando con localStorage
+      const estadosGuardados: Record<string, string> = JSON.parse(
+        localStorage.getItem('estadosImpresiones') || '{}',
+      );
+
+      const conNotificacion = data.map((imp: Impresion) => {
+        const estadoAnterior = estadosGuardados[imp.idImpresion];
+        const esNuevo = estadoAnterior && estadoAnterior !== imp.estado;
+        return { ...imp, esNuevo };
+      });
+
+      // Guardar estados actuales en localStorage
+      const nuevosEstados: Record<string, string> = {};
+      data.forEach((imp: Impresion) => {
+        nuevosEstados[imp.idImpresion] = imp.estado;
+      });
+      localStorage.setItem('estadosImpresiones', JSON.stringify(nuevosEstados));
+
+      setImpresiones(conNotificacion);
+    } catch (error) {
+      console.error(error);
+      message.error('Error al obtener las impresiones.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const enviarSolicitud = async (formData: FormData) => {
     setIsSubmitting(true);
     try {
-      // Llamada al servicio para crear la solicitud de impresion
       await impresionesService.crearSolicitud(formData);
       message.success('¡Solicitud enviada con éxito!');
       return true;
     } catch (error) {
-      // Manejo de errores en caso de que la solicitud falle
       console.error(error);
       message.error('Ocurrió un error al enviar la solicitud.');
       return false;
@@ -24,5 +66,9 @@ export const useImpresiones = () => {
     }
   };
 
-  return { enviarSolicitud, isSubmitting };
+  useEffect(() => {
+    obtenerMisImpresiones();
+  }, []);
+
+  return { enviarSolicitud, isSubmitting, impresiones, isLoading, obtenerMisImpresiones };
 };

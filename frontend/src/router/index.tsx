@@ -18,6 +18,7 @@ import { EstudianteDashboard } from '../pages/estudiante/EstudianteDashboard';
 import { AdminEstudiantesPage } from '../pages/admin/AdminEstudiantesPage';
 import { AdminInventarioPage } from '../pages/admin/AdminInventarioPage';
 import { MisCursosPage } from '../pages/profesor/MisCursosPage';
+import { MisImpresionesListPage } from '../pages/estudiante/MisImpresionesListPage';
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
 
           // solo para imprimir
           { path: '/estudiante/nueva-impresion', element: <MisImpresionesPage /> },
+          { path: '/estudiante/mis-impresiones', element: <MisImpresionesListPage /> },
 
           //{ path: '/estudiante/mis-cursos', element: <MisCursosPage /> },  #PARA EL FUTURO
           //{ path: '/estudiante/mis-ayudantias', element: <MisAyudantiasPage /> }, #PARA EL FUTURO
