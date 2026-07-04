@@ -57,7 +57,7 @@ export class ImpresionesService {
         creadoEn: 'desc',
       },
       include: {
-        estudiante: true, // Incluye la relación con el modelo Usuario
+        estudiante: true, // Incluye la relacion con el modelo Usuario
       },
     });
 
@@ -77,6 +77,16 @@ export class ImpresionesService {
       data: {
         estado: nuevoEstado,
         observacionAyudante: nuevaObservacion,
+      },
+    });
+  }
+  async obtenerMisImpresiones(refEstudiante: string): Promise<Impresion[]> {
+    return await this.prisma.impresion.findMany({
+      where: {
+        refEstudiante,
+      },
+      orderBy: {
+        creadoEn: 'desc',
       },
     });
   }

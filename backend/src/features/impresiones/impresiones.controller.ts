@@ -20,17 +20,23 @@ import type { RequestConUsuario } from '../../shared/guards/auth.guard';
 import { EstadoImpresion } from '@prisma/client';
 
 @Controller('impresiones')
-// Controlador para manejar las rutas relacionadas con las impresiones 3D
 export class ImpresionesController {
   constructor(private readonly impresionesService: ImpresionesService) {}
 
-  // 1. Obtenemos todas las impresiones
+  // Rutas especificas primero
+  @Get('mis-impresiones')
+  @UseGuards(AuthGuard)
+  async obtenerMisImpresiones(@Request() req: RequestConUsuario) {
+    return this.impresionesService.obtenerMisImpresiones(req.usuario.id);
+  }
+
+  // Obtenemos todas las impresiones (para ayudante)
   @Get()
   async obtenerTodasLasImpresiones(): Promise<any> {
     return this.impresionesService.obtenerTodas();
   }
 
-  // ACTUALIZAMOS UNA IMPRESION
+  // Actualizamos una impresion
   @Patch(':id')
   async actualizarImpresion(
     @Param('id') id: string,
@@ -49,10 +55,9 @@ export class ImpresionesController {
     );
   }
 
-  // CREAMOS UNA IMPRESION
+  // Creamos una impresion
   @Post()
   @UseInterceptors(
-    // Interceptor para manejar la subida  de archivos, con configuracion para almacenar los archivos en el servidor y validar las extensiones y tamanos permitidos
     FileFieldsInterceptor(
       [
         { name: 'modelo3d', maxCount: 1 },
@@ -72,7 +77,6 @@ export class ImpresionesController {
           if (extensionesPermitidas.includes(ext)) {
             cb(null, true);
           } else {
-            // Si la extension no es permitida, se rechaza el archivo y se lanza un error
             cb(new Error(`Extensión no permitida: ${ext}`), false);
           }
         },
@@ -80,7 +84,7 @@ export class ImpresionesController {
       },
     ),
   )
-  @UseGuards(AuthGuard) // Protege la ruta para que solo usuarios autenticados puedan acceder
+  @UseGuards(AuthGuard)
   async crearImpresion(
     @Body() dto: CrearImpresionDto,
     @UploadedFiles()

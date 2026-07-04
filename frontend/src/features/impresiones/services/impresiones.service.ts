@@ -14,7 +14,7 @@ export const impresionesService = {
 
   obtenerMisImpresiones: async () => {
     const token = localStorage.getItem('token');
-    const response = await axiosInstance.get('/impresiones', {
+    const response = await axiosInstance.get('/impresiones/mis-impresiones', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
