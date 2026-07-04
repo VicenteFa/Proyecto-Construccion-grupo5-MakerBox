@@ -361,9 +361,7 @@ jobs:
             ${{ env.BACKEND_PACKAGE_PATH }}/package.json
             ${{ env.BACKEND_PACKAGE_PATH }}/package-lock.json
 
-  # ── CI · Paso 5 (paralelo, rama frontend) ────
-  # Compilación del frontend: genera los archivos
-  # estáticos listos para servirse en producción.
+  # Compilacion del frontend:
   ci-compilar-frontend:
     name: "CI · Compilar y empaquetar — Frontend"
     runs-on: ubuntu-latest
@@ -403,7 +401,7 @@ jobs:
     name: "CD · Despliegue automático en Azure"
     runs-on: ubuntu-latest
     needs: [ci-compilar-backend, ci-compilar-frontend, ci-pruebas-rendimiento]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'push'
 
     environment:
       name: production
