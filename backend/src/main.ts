@@ -17,7 +17,10 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: /^http:\/\/localhost:\d+$/,
+    origin: [
+      /^http:\/\/localhost:\d+$/,
+      'https://miapp-github-deploy-b0fjdbdjc6bzerek.canadacentral-01.azurewebsites.net',
+    ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   });
