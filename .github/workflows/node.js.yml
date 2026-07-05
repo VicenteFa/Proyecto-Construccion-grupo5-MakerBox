@@ -18,7 +18,6 @@ permissions:
   id-token: write
 
 jobs:
-  # Analisis estatico: detecta errores de estilo
   ci-calidad-backend:
     name: "CI · Backend Check"
     runs-on: ubuntu-latest
@@ -74,8 +73,6 @@ jobs:
       - name: "Ejecutar Linter"
         run: npm run lint -- --fix
 
-  # Pruebas unitarias: validan cada funcion y
-  # modulo del backend de forma aislada.
   ci-pruebas-unitarias:
     name: "CI · Pruebas unitarias — Backend"
     runs-on: ubuntu-latest
@@ -124,9 +121,6 @@ jobs:
           flags: unit
           directory: ./backend/coverage/
 
-  # Pruebas de integración: verifican que los
-  # modulos funcionan correctamente entre si
-  # usando una base de datos PostgreSQL real
   ci-pruebas-integracion:
     name: "CI · Pruebas de integración — Backend + BD"
     runs-on: ubuntu-latest
@@ -192,8 +186,6 @@ jobs:
           flags: integration
           directory: ./backend/coverage/
 
-  # Pruebas del frontend: validan componentes
-  # y lógica de la interfaz de usuario.
   ci-pruebas-frontend:
     name: "CI · Pruebas y cobertura — Frontend"
     runs-on: ubuntu-latest
@@ -227,7 +219,6 @@ jobs:
           flags: frontend
           directory: ./frontend/coverage/
 
-  # Pruebas de rendimiento: simulan carga real
   ci-pruebas-rendimiento:
     name: "CI · Pruebas de rendimiento — K6 (carga y picos)"
     runs-on: ubuntu-latest
@@ -318,7 +309,6 @@ jobs:
             backend/load-tests/reporte.html
             backend/load-tests/reporte-spike.html
 
-  # Compilación del backend: genera el artefacto
   ci-compilar-backend:
     name: "CI · Compilar y empaquetar — Backend"
     runs-on: ubuntu-latest
@@ -361,7 +351,6 @@ jobs:
             ${{ env.BACKEND_PACKAGE_PATH }}/package.json
             ${{ env.BACKEND_PACKAGE_PATH }}/package-lock.json
 
-  # Compilacion del frontend:
   ci-compilar-frontend:
     name: "CI · Compilar y empaquetar — Frontend"
     runs-on: ubuntu-latest
@@ -384,8 +373,10 @@ jobs:
       - name: "Instalar dependencias del proyecto"
         run: npm ci
 
-      - name: "Compilar frontend (React/Vite → archivos estáticos)"
-        run: npm run build --if-present
+      - name: "Compilar frontend en modo produccion"
+        env:
+          NODE_ENV: production
+        run: npx vite build --mode production
 
       - name: "Subir artefacto de frontend listo para producción"
         uses: actions/upload-artifact@v4
@@ -393,10 +384,6 @@ jobs:
           name: artefacto-frontend-produccion
           path: ${{ env.FRONTEND_PACKAGE_PATH }}/dist
 
-  #  Objetivo: desplegar automaticamente a Azure
-  #  solo cuando todos los pasos de CI pasan
-  # Toma los artefactos aprobados por CI y los
-  # despliega automa en Azure.
   cd-despliegue-produccion:
     name: "CD · Despliegue automático en Azure"
     runs-on: ubuntu-latest
